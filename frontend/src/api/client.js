@@ -129,7 +129,11 @@ export const registerBidder = async (payload) => {
 
 // ── Tenders ──────────────────────────────────────────────────────────────────
 
-export const listTenders = () => request('/v1/tenders');
+export const listTenders = async () => {
+  const res = await request('/v1/tenders');
+  if (!Array.isArray(res)) throw new Error('API Shape Contract Violation: listTenders expected an Array');
+  return res;
+};
 export const getTender = (id) => request(`/v1/tenders/${id}`);
 export const getTenderDocuments = (tenderId) => request(`/v1/tenders/${tenderId}/documents`);
 export const createTender = (payload) =>

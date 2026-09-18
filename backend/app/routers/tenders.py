@@ -634,12 +634,19 @@ async def get_tender_pdf(tender_id: str, db=Depends(get_db)):
     query = [{"_id": oid}] if oid else []
     query.extend([{"_id": tender_id}, {"id": tender_id}, {"tender_no": tender_id}, {"reference_number": tender_id}])
     tender = await db["tenders"].find_one({"$or": query})
-    if not tender or not tender.get("document_path"):
+    if not tender or (not tender.get("document_path") and not tender.get("url")):
         raise HTTPException(status_code=404, detail="Tender or PDF document not found")
     
-    path = Path(tender["document_path"])
+    url = tender.get("url")
+    path = Path(tender.get("document_path") or "")
     if not path.exists():
-        raise HTTPException(status_code=404, detail="PDF file not found on disk")
+        if url and url.startswith("http"):
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url=url)
+        # Fallback for missing local files (e.g. demo data or ephemeral wipe)
+        from fastapi.responses import Response
+        dummy_pdf = b"%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids [3 0 R]\n/Count 1\n>>\nendobj\n3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 612 792]\n/Resources <<\n/Font <<\n/F1 4 0 R\n>>\n>>\n/Contents 5 0 R\n>>\nendobj\n4 0 obj\n<<\n/Type /Font\n/Subtype /Type1\n/BaseFont /Helvetica\n>>\nendobj\n5 0 obj\n<<\n/Length 75\n>>\nstream\nBT\n/F1 12 Tf\n10 750 Td\n(This file was lost or not found on the local ephemeral disk.) Tj\nET\nendstream\nendobj\nxref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000219 00000 n\n0000000307 00000 n\ntrailer\n<<\n/Size 6\n/Root 1 0 R\n>>\nstartxref\n433\n%%EOF"
+        return Response(content=dummy_pdf, media_type="application/pdf")
     
     from fastapi.responses import FileResponse
     original_name = tender.get("original_filename") or tender.get("filename", "tender.pdf")

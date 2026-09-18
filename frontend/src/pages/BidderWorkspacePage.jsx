@@ -107,7 +107,7 @@ export default function BidderWorkspacePage() {
       const r = await listBidDocuments(bidId);
       const docs = Array.isArray(r) ? r : (r?.documents || []);
       setBidDocs(prev => ({ ...prev, [bidId]: docs }));
-    } catch {}
+    } catch (err) { flash('error', 'Failed to load documents: ' + (err.message || 'Network error')); }
   }
 
   async function handleUpload(bidId, files) {
@@ -115,7 +115,7 @@ export default function BidderWorkspacePage() {
     setUploading(bidId);
     try {
       for (const f of files) await uploadBidderDocument(bidId, f);
-      await evaluateBid(bidId).catch(() => {});
+      await evaluateBid(bidId).catch(err => flash('error', 'Evaluation error: ' + err.message));
       await loadDocs(bidId);
       await load();
       flash('success', `${files.length} doc(s) uploaded and AI-parsed.`);
@@ -126,11 +126,12 @@ export default function BidderWorkspacePage() {
   async function handleReverify(bidId) {
     setReverifying(bidId);
     try {
-      await runVerification(bidId).catch(() => {});
-      await evaluateBid(bidId).catch(() => {});
+      await runVerification(bidId).catch(err => flash('error', 'Verification error: ' + err.message));
+      await evaluateBid(bidId).catch(err => flash('error', 'Evaluation error: ' + err.message));
       await load(); await loadDocs(bidId);
       flash('success', 'Verification refreshed.');
-    } catch {} finally { setReverifying(null); }
+    } catch (err) { flash('error', 'Action failed: ' + err.message); } 
+    finally { setReverifying(null); }
   }
 
   const co = profile?.company_name || authUser?.name || 'My Company';

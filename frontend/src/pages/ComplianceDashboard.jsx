@@ -98,7 +98,7 @@ function OfficerActionPanel({ bidId, onSuccess }) {
         'ACCEPT': 'APPROVE',
         'REJECT': 'REJECT',
         'SEEK_CLARIFICATION': 'SEEK_CLARIFICATION',
-        'MARK_PENDING': 'SEEK_CLARIFICATION',
+        'MARK_PENDING': 'PENDING',
       };
       const backendAction = actionMap[action] || action;
       const justification = comment.trim().length >= 10
@@ -106,7 +106,7 @@ function OfficerActionPanel({ bidId, onSuccess }) {
         : `Officer recorded compliance evaluation decision: ${backendAction}.`;
       await submitOfficerAction(bidId, {
         action: backendAction,
-        reason: justification,       // backend requires 'reason' not 'comment'
+        comment: justification,
         actor: 'officer@gem.gov.in',
       });
       setOk(true);

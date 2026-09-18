@@ -36,6 +36,7 @@ function RoleGuard({ allowedRoles, fallback }) {
 const ROLE_HOME = {
   PROCUREMENT_OFFICER: '/dashboard',
   BIDDER: '/my-bids',
+  FINANCIAL_EVALUATOR: '/financial',
 };
 
 // ─── Layout with TopNav ────────────────────────────────────────────────────────
@@ -73,7 +74,9 @@ export default function App() {
             <Route path="/bids" element={<BidWorkspacePage />} />
             <Route path="/bids/:bidId" element={<BidWorkspacePage />} />
             <Route path="/compliance" element={<ComplianceDashboard />} />
-            <Route path="/financial" element={<FinancialWorkspacePage />} />
+            <Route element={<RoleGuard allowedRoles={['FINANCIAL_EVALUATOR']} />}>
+              <Route path="/financial" element={<FinancialWorkspacePage />} />
+            </Route>
 
             {/* Bidder workspace */}
             <Route path="/my-bids" element={<BidderWorkspacePage />} />

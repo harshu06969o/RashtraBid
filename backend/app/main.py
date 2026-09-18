@@ -47,6 +47,8 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from app.core.storage import HybridStorage
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
@@ -106,40 +108,7 @@ from pathlib import Path
 from app.paths import DATA_DIR, TENDER_DOCS_DIR, BIDDER_DOCS_DIR, SAMPLE_DOCS_DIR, UPLOADS_DIR
 
 # --- Utilities ---------------------------------------------------------------
-
-def utcnow_str() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def doc_to_dict(d: Any) -> Any:
-    """Recursively convert MongoDB BSON document to clean JSON serializable dictionary."""
-    if d is None:
-        return {}
-    if isinstance(d, ObjectId):
-        return str(d)
-    if isinstance(d, datetime):
-        return d.isoformat()
-    if isinstance(d, list):
-        return [doc_to_dict(item) for item in d]
-    if isinstance(d, dict):
-        res = dict(d)
-        if "_id" in res:
-            res["id"] = str(res.pop("_id"))
-        for k, v in list(res.items()):
-            res[k] = doc_to_dict(v)
-        return res
-    return d
-
-
-def sha256(data: str) -> str:
-    return hashlib.sha256(data.encode()).hexdigest()
-
-
-def to_oid(id_str: str) -> ObjectId:
-    try:
-        return ObjectId(id_str)
-    except Exception:
-        raise HTTPException(status_code=422, detail=f"Invalid ID format: {id_str}")
+# (Utility functions like doc_to_dict, utcnow_str, sha256, and to_oid are imported from app.core.database)
 
 
 # --- Auth / JWT --------------------------------------------------------------
@@ -726,6 +695,7 @@ def compute_risk(rule_results: List[dict]) -> tuple:
     review_c = sum(1 for r in rule_results if r.get("result") == "REVIEW")
     pending_c = sum(1 for r in rule_results if r.get("result") == "PENDING")
     pass_c = sum(1 for r in rule_results if r.get("result") in ("PASS", "NOT_APPLICABLE"))
+    critical_fail_c = sum(1 for r in rule_results if r.get("result") in ("FAIL", "MISSING", "EXPIRED") and r.get("severity") == "CRITICAL")
 
     score = int((pass_c / total) * 100)
 
@@ -736,8 +706,10 @@ def compute_risk(rule_results: List[dict]) -> tuple:
     else:
         label, band = "NON-COMPLIANT", "HIGH"
 
-    if fail_c >= 2:
-        band = "CRITICAL"
+    if critical_fail_c > 0:
+        label, band = "NON-COMPLIANT", "CRITICAL"
+    elif fail_c >= 2:
+        label, band = "NON-COMPLIANT", "CRITICAL"
 
     overall = "FAIL" if fail_c > 0 else (
         "REVIEW" if review_c > 0 else ("PENDING" if pending_c > 0 else "PASS")
@@ -947,7 +919,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+        "https://rashtra-bid.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -1165,9 +1143,13 @@ async def get_tender(tender_id: str, db=Depends(get_db)):
     docs = []
     async for d in db["tender_docs"].find({"tender_id": tender_id}):
         d["id"] = str(d.pop("_id")); docs.append(d)
+    bid_list = await db["bids"].find({"tender_id": t["_id"]}).to_list(length=None)
+    bidder_ids = list({bid["bidder_id"] for bid in bid_list if bid.get("bidder_id")})
+    bidders_map = {b["_id"]: b for b in await db["bidders"].find({"_id": {"$in": bidder_ids}}).to_list(length=None)} if bidder_ids else {}
+    
     bids = []
-    async for bid in db["bids"].find({"tender_id": t["_id"]}):
-        bidder = await db["bidders"].find_one({"_id": bid["bidder_id"]})
+    for bid in bid_list:
+        bidder = bidders_map.get(bid["bidder_id"])
         bids.append({
             "id": str(bid["_id"]), "overall_status": bid.get("overall_status"), "risk_level": bid.get("risk_level"),
             "compliance_score": bid.get("compliance_score"), "officer_status": bid.get("officer_status"),
@@ -1225,9 +1207,13 @@ async def update_tender(tender_id: str, body: dict, user: dict = Depends(require
 
 @app.get("/api/tenders/{tender_id}/bids")
 async def get_tender_bids(tender_id: str, db=Depends(get_db)):
+    bid_list = await db["bids"].find({"tender_id": to_oid(tender_id)}).to_list(length=None)
+    bidder_ids = list({bid["bidder_id"] for bid in bid_list if bid.get("bidder_id")})
+    bidders_map = {b["_id"]: b for b in await db["bidders"].find({"_id": {"$in": bidder_ids}}).to_list(length=None)} if bidder_ids else {}
+    
     bids = []
-    async for bid in db["bids"].find({"tender_id": to_oid(tender_id)}):
-        bidder = await db["bidders"].find_one({"_id": bid["bidder_id"]})
+    for bid in bid_list:
+        bidder = bidders_map.get(bid["bidder_id"])
         bids.append({
             "id": str(bid["_id"]), "tender_id": str(bid["tender_id"]), "bidder_id": str(bid["bidder_id"]),
             "overall_status": bid.get("overall_status", "PENDING"), "risk_level": bid.get("risk_level"),
@@ -1255,10 +1241,9 @@ async def upload_tender_document(
         raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
 
     content = await file.read()
-    safe_name = f"{tender_id}_{uuid.uuid4().hex}{ext}"
-    save_path = str(TENDER_DOCS_DIR / safe_name)
-    with open(save_path, "wb") as f:
-        f.write(content)
+    storage = HybridStorage(base_dir=TENDER_DOCS_DIR)
+    stored_file = await storage.save_file(content, file.filename or f"upload{ext}")
+    save_path = str(stored_file.file_path)
 
     extracted_text, page_count, method = "", 0, "NONE"
     if ext.lower() == ".pdf":
@@ -1272,13 +1257,25 @@ async def upload_tender_document(
             await db["rules"].insert_one(rule)
 
     doc_record = {
-        "tender_id": tender_id, "filename": safe_name, "original_filename": file.filename,
-        "file_hash": sha256(content.decode("latin-1", errors="replace")),
-        "file_size": len(content), "page_count": page_count, "extraction_method": method,
+        "tender_id": tender_id, "filename": stored_file.filename, "original_filename": file.filename,
+        "file_hash": stored_file.file_hash,
+        "file_size": stored_file.size_bytes, "page_count": page_count, "extraction_method": method,
         "compiler_status": "COMPILED" if compiled_rules else "NO_RULES_EXTRACTED",
         "rules_compiled": len(compiled_rules), "uploaded_by": user["username"], "uploaded_at": utcnow_str(),
+        "document_path": save_path,
+        "url": stored_file.url,
     }
     doc_result = await db["tender_docs"].insert_one(doc_record)
+    
+    await db["tenders"].update_one(
+        {"_id": to_oid(tender_id)},
+        {"$set": {
+            "document_path": save_path,
+            "url": stored_file.url,
+            "filename": stored_file.filename,
+        }}
+    )
+
     return {"id": str(doc_result.inserted_id), "message": f"Uploaded. {len(compiled_rules)} rules compiled.", "rules_compiled": len(compiled_rules), "extraction_method": method}
 
 
@@ -1327,27 +1324,11 @@ async def get_my_profile(user: dict = Depends(require_role("BIDDER")), db=Depend
         bidder = await db["bidders"].find_one({
             "$or": [
                 {"user_id": user["username"]},
-                {"email": user.get("email", user["username"])},
-                {"gstin": "33AABCB1234F1Z5"},
+                {"email": user.get("email", user["username"])}
             ]
         })
     if not bidder:
-        default_doc = {
-            "name": user.get("name") or "Bharat Engineering & Industrial Ltd",
-            "legal_name": user.get("name") or "Bharat Engineering & Industrial Ltd",
-            "company_name": user.get("name") or "Bharat Engineering & Industrial Ltd",
-            "gstin": "33AABCB1234F1Z5",
-            "pan": "AABCB1234F",
-            "category": "Class-I Local Supplier (MSE)",
-            "state": "Tamil Nadu",
-            "udyam_number": "UDYAM-TN-02-0012345",
-            "turnover_cr": 18.5,
-            "local_content_pct": 65.0,
-            "user_id": user.get("username", "bidder@vendor.com"),
-            "created_at": utcnow_str(),
-        }
-        res = await db["bidders"].insert_one(default_doc)
-        bidder = await db["bidders"].find_one({"_id": res.inserted_id})
+        raise HTTPException(status_code=404, detail="No bidder profile linked to this account. Please register your profile.")
     return doc_to_dict(bidder)
 
 
@@ -1488,9 +1469,13 @@ def fmt_bid(bid: dict, bidder: Optional[dict]) -> dict:
 
 @app.get("/api/bids")
 async def list_bids(db=Depends(get_db)):
+    bid_list = await db["bids"].find({}).sort("submitted_at", -1).to_list(length=None)
+    bidder_ids = list({bid["bidder_id"] for bid in bid_list if bid.get("bidder_id")})
+    bidders_map = {b["_id"]: b for b in await db["bidders"].find({"_id": {"$in": bidder_ids}}).to_list(length=None)} if bidder_ids else {}
+    
     bids = []
-    async for bid in db["bids"].find({}).sort("submitted_at", -1):
-        bidder = await db["bidders"].find_one({"_id": bid["bidder_id"]})
+    for bid in bid_list:
+        bidder = bidders_map.get(bid["bidder_id"])
         bids.append(fmt_bid(bid, bidder))
     return bids
 
@@ -1728,13 +1713,22 @@ async def list_bid_documents(bid_id: str, db=Depends(get_db)):
 
 
 @app.post("/api/bids/{bid_id}/documents/upload")
-async def upload_bid_document(bid_id: str, file: UploadFile = File(...), db=Depends(get_db)):
+async def upload_bid_document(
+    bid_id: str,
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user),
+    db=Depends(get_db)
+):
     oid = safe_oid(bid_id)
     conds = [{"_id": oid}] if oid else []
     conds.extend([{"_id": bid_id}, {"id": bid_id}, {"bid_id": bid_id}])
     bid = await db["bids"].find_one({"$or": conds})
     if not bid:
         raise HTTPException(status_code=404, detail="Bid not found")
+        
+    if user.get("role") != "PROCUREMENT_OFFICER":
+        if str(bid.get("bidder_id")) != str(user.get("bidder_id")):
+            raise HTTPException(status_code=403, detail="Not authorized to upload documents for this bid")
 
     ext = Path(file.filename or "").suffix
     if ext.lower() not in {".pdf", ".jpg", ".jpeg", ".png"}:
@@ -1844,6 +1838,7 @@ async def evaluate_bid(bid_id: str, db=Depends(get_db)):
                 "description": rule.get("description"), "metric": rule.get("metric"),
                 "operator": rule.get("operator"), "threshold_value": rule.get("threshold_value"),
                 "is_mandatory": rule.get("is_mandatory", True), "category": rule.get("category"),
+                "severity": rule.get("severity", "NORMAL"),
                 "clause": rule.get("clause"),
             },
         }
@@ -1853,7 +1848,7 @@ async def evaluate_bid(bid_id: str, db=Depends(get_db)):
     for rr in rule_results:
         await db["rule_results"].insert_one(rr)
 
-    risk_data, overall_status = compute_risk([{"result": rr["result"]} for rr in rule_results])
+    risk_data, overall_status = compute_risk([{"result": rr["result"], "severity": rr["requirement_rule"]["severity"]} for rr in rule_results])
 
     await db["bids"].update_one(
         {"_id": to_oid(bid_id)},
@@ -1959,7 +1954,7 @@ async def officer_action(
     user: dict = Depends(require_role("PROCUREMENT_OFFICER")),
     db=Depends(get_db),
 ):
-    VALID = {"APPROVE", "REJECT", "SEEK_CLARIFICATION", "OVERRIDE"}
+    VALID = {"APPROVE", "REJECT", "SEEK_CLARIFICATION", "OVERRIDE", "PENDING"}
     if body.action not in VALID:
         raise HTTPException(status_code=400, detail=f"Invalid action. Must be: {VALID}")
     if len(body.comment.strip()) < 10:
@@ -2042,7 +2037,24 @@ async def get_all_officer_overrides(db=Depends(get_db)):
 @app.get("/bids/{bid_id}/audit")
 async def get_audit_trail(bid_id: str, db=Depends(get_db)):
     events = []
+    chain_valid = True
+    expected_prev_hash = ""
     async for ev in db["audit_events"].find({"bid_id": bid_id}).sort("created_at", 1):
+        # Cryptographic verification of the chain
+        payload = json.dumps({
+            "event_type": ev.get("event_type"), 
+            "actor": ev.get("actor"), 
+            "details": ev.get("details"), 
+            "ts": ev.get("created_at"), 
+            "prev_hash": ev.get("prev_hash")
+        }, sort_keys=True)
+        computed_hash = sha256(payload)
+        
+        if computed_hash != ev.get("event_hash") or ev.get("prev_hash") != expected_prev_hash:
+            chain_valid = False
+            
+        expected_prev_hash = ev.get("event_hash")
+        
         events.append({
             "id": str(ev["_id"]), "event_type": ev.get("event_type"), "actor": ev.get("actor"),
             "details": ev.get("details"), "created_at": ev.get("created_at"),
@@ -2063,7 +2075,7 @@ async def get_audit_trail(bid_id: str, db=Depends(get_db)):
         "bidder_name": bidder_name,
         "tender_reference": tender_ref,
         "events": events,
-        "chain_valid": True,
+        "chain_valid": chain_valid,
         "total_events": len(events),
     }
 
@@ -2338,7 +2350,10 @@ async def corrigendum_impact(body: CorrigendumRequest, user: dict = Depends(requ
     if not tender:
         raise HTTPException(status_code=404, detail="Tender not found")
 
-    rule = await db["rules"].find_one({"tender_id": to_oid(body.tender_id), "rule_type": body.changed_rule_type.upper()})
+    rule = await db["rules"].find_one(
+        {"tender_id": to_oid(body.tender_id), "rule_type": body.changed_rule_type.upper()},
+        sort=[("_id", -1)]
+    )
     if not rule:
         raise HTTPException(status_code=404, detail=f"No rule of type '{body.changed_rule_type}' found")
 

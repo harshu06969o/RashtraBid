@@ -55,10 +55,6 @@ export default function DashboardPage() {
   const authState = useSelector(s => s.auth);
   const currentRole = authState?.role || localStorage.getItem('role');
 
-  if (currentRole === 'BIDDER') {
-    return <Navigate to="/my-bids" replace />;
-  }
-
   const [bids, setBids] = useState([]);
   const [tenders, setTenders] = useState([]);
   const [selectedTenderId, setSelectedTenderId] = useState('');
@@ -73,7 +69,13 @@ export default function DashboardPage() {
   const [overrideJust, setOverrideJust] = useState('');
   const [overrideStatus, setOverrideStatus] = useState('REVIEW');
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { 
+    if (currentRole !== 'BIDDER') loadData(); 
+  }, [currentRole]);
+
+  if (currentRole === 'BIDDER') {
+    return <Navigate to="/my-bids" replace />;
+  }
 
   async function loadData(targetId) {
     setLoading(true);

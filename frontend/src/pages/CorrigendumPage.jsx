@@ -70,7 +70,7 @@ export default function CorrigendumPage() {
   }
 
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto', padding: '16px 14px', width: '100%', maxWidth: '100vw', boxSizing: 'border-box', fontFamily: 'inherit' }}>
+    <div style={{ maxWidth: 960, margin: '0 auto', padding: '16px 14px', width: '100%', boxSizing: 'border-box', fontFamily: 'inherit' }}>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>

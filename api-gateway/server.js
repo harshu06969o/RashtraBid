@@ -141,7 +141,7 @@ app.use(cors({
     if (allowedOrigins.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)) {
       return callback(null, true);
     }
-    return callback(null, true); // Allow dev access
+    return callback(new Error('CORS policy violation - Origin not allowed'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
