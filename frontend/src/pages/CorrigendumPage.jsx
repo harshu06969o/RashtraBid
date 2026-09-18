@@ -70,16 +70,16 @@ export default function CorrigendumPage() {
   }
 
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px', fontFamily: 'inherit' }}>
+    <div style={{ maxWidth: 960, margin: '0 auto', padding: '16px 14px', width: '100%', maxWidth: '100vw', boxSizing: 'border-box', fontFamily: 'inherit' }}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 32 }}>📝</span>
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+          <span style={{ fontSize: 28 }}>📝</span>
           <div>
-            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#1e3a5f' }}>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: '#1e3a5f' }}>
               Corrigendum Impact Analyzer
             </h1>
-            <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>
+            <p style={{ margin: '3px 0 0', fontSize: 12, color: '#64748b' }}>
               Simulate rule amendments and evaluate deterministic impact on submitted bids before issuing corrigendum
             </p>
           </div>
@@ -89,29 +89,30 @@ export default function CorrigendumPage() {
       {/* Tender & Rule Configuration Card */}
       <div style={{
         background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14,
-        padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', marginBottom: 24,
+        padding: '18px 16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', marginBottom: 20,
       }}>
-        <div style={{ fontWeight: 800, fontSize: 14, color: '#1e3a5f', marginBottom: 16 }}>
+        <div style={{ fontWeight: 800, fontSize: 13, color: '#1e3a5f', marginBottom: 14 }}>
           🛠️ Configure Corrigendum Simulation Parameters
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 14 }}>
           {/* Select Tender */}
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 5 }}>
               Target Tender
             </label>
             <select
               value={selectedTenderId}
               onChange={e => setSelectedTenderId(e.target.value)}
               style={{
-                width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #cbd5e1',
-                fontSize: 13, color: '#1e293b', background: '#fff',
+                width: '100%', padding: '9px 12px', borderRadius: 8,
+                border: '1.5px solid #cbd5e1', fontSize: 13, color: '#1e293b',
+                background: '#fff', outline: 'none', boxSizing: 'border-box',
               }}
             >
               {tenders.map(t => (
                 <option key={t.id} value={t.id}>
-                  {t.reference_number} — {t.title}
+                  {t.reference_number || t.tender_no || t.title}
                 </option>
               ))}
               {tenders.length === 0 && <option value="">No tenders found</option>}
@@ -120,36 +121,39 @@ export default function CorrigendumPage() {
 
           {/* Rule Type */}
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 5 }}>
               Rule to Amend
             </label>
             <select
               value={ruleType}
               onChange={e => setRuleType(e.target.value)}
               style={{
-                width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #cbd5e1',
-                fontSize: 13, color: '#1e293b', background: '#fff',
+                width: '100%', padding: '9px 12px', borderRadius: 8,
+                border: '1.5px solid #cbd5e1', fontSize: 13, color: '#1e293b',
+                background: '#fff', outline: 'none', boxSizing: 'border-box',
               }}
             >
-              <option value="TURNOVER">Average Annual Turnover (₹ Crore)</option>
-              <option value="MII_PERCENT">Make In India Local Content (%)</option>
-              <option value="GST_ACTIVE">GST Registration Active Status</option>
+              <option value="TURNOVER">Annual Turnover Threshold (₹ Cr)</option>
+              <option value="EXPERIENCE">Past Experience Threshold (Years)</option>
+              <option value="LOCAL_CONTENT">Make in India Local Content (%)</option>
             </select>
           </div>
 
           {/* New Threshold */}
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 5 }}>
               New Threshold Value
             </label>
             <input
-              type="text"
+              type="number"
+              step="0.5"
               value={newThreshold}
               onChange={e => setNewThreshold(e.target.value)}
               placeholder="e.g. 10.0"
               style={{
-                width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #cbd5e1',
-                fontSize: 13, color: '#1e293b', boxSizing: 'border-box',
+                width: '100%', padding: '9px 12px', borderRadius: 8,
+                border: '1.5px solid #cbd5e1', fontSize: 13, color: '#1e293b',
+                outline: 'none', boxSizing: 'border-box',
               }}
             />
           </div>
@@ -157,28 +161,29 @@ export default function CorrigendumPage() {
 
         {/* Amendment Notes */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>
-            Corrigendum Justification / Notes
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#475569', marginBottom: 5 }}>
+            Amendment Administrative Notes (GFR 2017 Rule 173 Compliance)
           </label>
-          <input
-            type="text"
+          <textarea
             value={notes}
             onChange={e => setNotes(e.target.value)}
+            rows={2}
             style={{
-              width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #cbd5e1',
-              fontSize: 13, color: '#1e293b', boxSizing: 'border-box',
+              width: '100%', padding: '9px 12px', borderRadius: 8,
+              border: '1.5px solid #cbd5e1', fontSize: 12, color: '#1e293b',
+              outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
             }}
           />
         </div>
 
         <button
           onClick={handleAnalyze}
-          disabled={loading || !selectedTenderId}
+          disabled={loading}
           id="btn-run-corrigendum-analysis"
           style={{
-            background: loading ? '#94a3b8' : 'linear-gradient(135deg, #1e3a5f, #1e40af)',
+            background: 'linear-gradient(135deg, #1e3a5f, #0d2137)',
             color: '#fff', border: 'none', borderRadius: 8,
-            padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer',
+            padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer',
             boxShadow: '0 2px 8px rgba(30,58,95,0.25)',
           }}
         >
@@ -216,14 +221,14 @@ export default function CorrigendumPage() {
 
           {/* Threshold Diff Card */}
           <div style={{
-            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px',
+            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 18px',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12,
           }}>
             <div>
               <span style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Rule Amended: </span>
               <strong style={{ color: '#1e293b' }}>{result.changed_rule_type}</strong>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span style={{ background: '#f1f5f9', padding: '4px 10px', borderRadius: 6, fontSize: 12, color: '#64748b' }}>
                 Previous: <strong>₹{result.old_threshold || '—'} Cr</strong>
               </span>
@@ -244,44 +249,46 @@ export default function CorrigendumPage() {
                 No submitted bids found for this tender to analyze.
               </div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-                <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
-                    <th style={{ padding: '10px 16px' }}>Bidder Name</th>
-                    <th style={{ padding: '10px 16px' }}>Declared Metric</th>
-                    <th style={{ padding: '10px 16px' }}>Previous Status</th>
-                    <th style={{ padding: '10px 16px' }}>Projected Status</th>
-                    <th style={{ padding: '10px 16px' }}>Required Officer Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.bidder_impacts.map((item, idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', background: item.changed ? '#fffbeb' : '#fff' }}>
-                      <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
-                        {item.bidder_name}
-                      </td>
-                      <td style={{ padding: '12px 16px', color: '#64748b' }}>
-                        {item.metric_value != null ? `₹${item.metric_value} Cr` : '—'}
-                      </td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <ResultBadge result={item.old_result} />
-                      </td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <ResultBadge result={item.new_result} />
-                      </td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <span style={{
-                          padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800,
-                          background: item.action_required === 'DISQUALIFY' ? '#fee2e2' : (item.action_required === 'RE_EVALUATE' ? '#fef3c7' : '#f1f5f9'),
-                          color: item.action_required === 'DISQUALIFY' ? '#991b1b' : (item.action_required === 'RE_EVALUATE' ? '#92400e' : '#64748b'),
-                        }}>
-                          {item.action_required}
-                        </span>
-                      </td>
+              <div className="responsive-table-wrapper">
+                <table style={{ width: '100%', minWidth: 600, borderCollapse: 'collapse', fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      <th style={{ padding: '10px 16px', textAlign: 'left' }}>Bidder</th>
+                      <th style={{ padding: '10px 16px', textAlign: 'left' }}>Turnover</th>
+                      <th style={{ padding: '10px 16px', textAlign: 'left' }}>Previous Status</th>
+                      <th style={{ padding: '10px 16px', textAlign: 'left' }}>Simulated Status</th>
+                      <th style={{ padding: '10px 16px', textAlign: 'left' }}>Action Required</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {result.bidder_impacts.map((item) => (
+                      <tr key={item.bid_id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '12px 16px', fontWeight: 700, color: '#1e3a5f' }}>
+                          {item.bidder_name}
+                        </td>
+                        <td style={{ padding: '12px 16px', color: '#64748b' }}>
+                          {item.metric_value != null ? `₹${item.metric_value} Cr` : '—'}
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <ResultBadge result={item.old_result} />
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <ResultBadge result={item.new_result} />
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <span style={{
+                            padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800,
+                            background: item.action_required === 'DISQUALIFY' ? '#fee2e2' : (item.action_required === 'RE_EVALUATE' ? '#fef3c7' : '#f1f5f9'),
+                            color: item.action_required === 'DISQUALIFY' ? '#991b1b' : (item.action_required === 'RE_EVALUATE' ? '#92400e' : '#64748b'),
+                          }}>
+                            {item.action_required}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
 

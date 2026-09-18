@@ -75,6 +75,13 @@ export default function BidWorkspacePage() {
   const [evaluating, setEvaluating] = useState({});
   const [expandedBid, setExpandedBid] = useState(null);
   const [banner, setBanner] = useState(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 880 : false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 880);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const loadData = useCallback(async (targetTenderId) => {
     setLoading(true);
@@ -162,15 +169,19 @@ export default function BidWorkspacePage() {
   const reviewCount = bids.filter(b => ['REVIEW', 'UNDER_REVIEW'].includes(b.overall_status || b.compliance_status)).length;
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f8fafc', fontFamily: "'Inter', sans-serif", padding: '24px 28px', maxWidth: 1400, margin: '0 auto' }}>
+    <div style={{
+      minHeight: 'calc(100vh - 54px)', background: '#f8fafc', fontFamily: "'Inter', sans-serif",
+      padding: isMobile ? '14px 12px' : '24px 28px', maxWidth: 1400, margin: '0 auto',
+      width: '100%', maxWidth: '100vw', overflowX: 'hidden', boxSizing: 'border-box'
+    }}>
 
       {/* ─── Header & Tender Filter Selector ─────────────────────────────────── */}
-      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 24px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: isMobile ? '16px 14px' : '20px 24px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 6, background: '#dbeafe', color: '#1d4ed8', border: '1px solid #93c5fd', letterSpacing: '0.06em' }}>
             🔵 TECHNICAL EVALUATOR
           </span>
-          <h1 style={{ margin: '6px 0 2px', fontSize: 22, fontWeight: 800, color: '#0f172a' }}>Bid Compliance Matrix</h1>
+          <h1 style={{ margin: '6px 0 2px', fontSize: isMobile ? 18 : 22, fontWeight: 800, color: '#0f172a' }}>Bid Compliance Matrix</h1>
           <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
             {tender ? `${tender.reference_number || tender.tender_no || tender.title}` : 'All Procurement Tenders'}
             {' '}· <strong style={{ color: '#0f172a' }}>{total}</strong> bids received for this scope
@@ -178,8 +189,8 @@ export default function BidWorkspacePage() {
         </div>
 
         {/* Tender Scoping Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
+          <div style={{ width: isMobile ? '100%' : 'auto' }}>
             <label style={{ fontSize: 11, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
               Active Tender Scope:
             </label>
@@ -189,7 +200,8 @@ export default function BidWorkspacePage() {
               style={{
                 padding: '8px 12px', borderRadius: 8, border: '1.5px solid #cbd5e1',
                 fontSize: 12, fontWeight: 700, background: '#fff', color: '#0f172a',
-                minWidth: 280, cursor: 'pointer', outline: 'none',
+                width: isMobile ? '100%' : 'auto', minWidth: isMobile ? 0 : 280, maxWidth: '100%',
+                cursor: 'pointer', outline: 'none', boxSizing: 'border-box',
               }}
             >
               <option value="">🌐 All Tenders Combined ({tenders.length} total)</option>
@@ -211,7 +223,8 @@ export default function BidWorkspacePage() {
             style={{
               padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0',
               background: '#f8fafc', color: '#475569', fontSize: 12, fontWeight: 700,
-              cursor: loading ? 'wait' : 'pointer', alignSelf: 'flex-end',
+              cursor: loading ? 'wait' : 'pointer', alignSelf: isMobile ? 'stretch' : 'flex-end',
+              width: isMobile ? '100%' : 'auto',
             }}
           >
             {loading ? '⏳ Loading…' : '🔄 Refresh Bids'}
@@ -233,19 +246,19 @@ export default function BidWorkspacePage() {
       )}
 
       {/* ─── KPI Cards ───────────────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
         {[
           { label: 'Total Bids', value: total, color: '#1e3a8a', bg: '#eff6ff', border: '#bfdbfe', icon: '📦' },
           { label: 'Compliant', value: passCount, color: '#166534', bg: '#dcfce7', border: '#86efac', icon: '✓' },
           { label: 'Require Review', value: reviewCount, color: '#92400e', bg: '#fffbeb', border: '#fde68a', icon: '⚠️' },
           { label: 'Non-Compliant', value: failCount, color: '#991b1b', bg: '#fee2e2', border: '#fca5a5', icon: '✗' },
         ].map(k => (
-          <div key={k.label} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, background: k.bg, border: `1px solid ${k.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+          <div key={k.label} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: k.bg, border: `1px solid ${k.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
               {k.icon}
             </div>
             <div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.value}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.value}</div>
               <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{k.label}</div>
             </div>
           </div>
@@ -275,7 +288,7 @@ export default function BidWorkspacePage() {
             <p style={{ color: '#64748b', fontSize: 13, maxWidth: 520, margin: '0 auto 20px', lineHeight: 1.5 }}>
               This procurement tender is currently published and open for bid submissions. Vendors can select this tender from the Bidder Portal to apply and submit their sealed verification documents.
             </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 onClick={() => navigate('/my-bids')}
                 style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
@@ -291,8 +304,8 @@ export default function BidWorkspacePage() {
             </div>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <div className="responsive-table-wrapper">
+            <table style={{ width: '100%', minWidth: 720, borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
                   {['Code', 'Bidder', 'GSTIN', 'Turnover', 'MII %', 'Score', 'Status', 'Risk', 'Actions'].map(h => (

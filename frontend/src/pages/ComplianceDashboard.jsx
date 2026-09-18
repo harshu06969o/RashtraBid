@@ -680,6 +680,14 @@ export default function ComplianceDashboard() {
   const [filter, setFilter] = useState('ALL');
   const [error, setError] = useState(null);
   const [searchParams] = useSearchParams();
+  const [mobileTab, setMobileTab] = useState('LIST');
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const loadBids = useCallback(async () => {
     setError(null);
@@ -705,6 +713,9 @@ export default function ComplianceDashboard() {
 
   async function selectBid(bid) {
     setDetailLoading(true);
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setMobileTab('DETAIL');
+    }
     try {
       const bId = bid.id || bid._id;
       const data = await getBid(bId);
@@ -770,103 +781,166 @@ export default function ComplianceDashboard() {
   );
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 48px)', overflow: 'hidden' }}>
-      {/* Left: Bidder list */}
-      <div style={{ width: 320, flexShrink: 0, borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#fff' }}>
-        <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #f1f5f9' }}>
-          <div style={{ fontWeight: 800, fontSize: 13, color: '#1e3a5f' }}>Compliance Trace & Review</div>
-          <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>
-            {selectedBid?.tender_reference || selectedBid?.tender_id ? `Tender: ${selectedBid.tender_reference || selectedBid.tender_id}` : 'Technical Verification'}
-          </div>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', height: 'calc(100vh - 54px)', overflow: 'hidden', width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
+      {/* Mobile Tab Toggle Bar */}
+      {isMobile && (
+        <div style={{ display: 'flex', background: '#0f172a', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
+          <button
+            onClick={() => setMobileTab('LIST')}
+            style={{
+              flex: 1, padding: '12px 14px', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700,
+              background: mobileTab === 'LIST' ? '#1e293b' : 'transparent',
+              color: mobileTab === 'LIST' ? '#FBBF24' : '#94A3B8',
+              borderBottom: mobileTab === 'LIST' ? '2px solid #FF9900' : '2px solid transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            📋 Bidders ({filteredBids.length})
+          </button>
+          <button
+            onClick={() => setMobileTab('DETAIL')}
+            style={{
+              flex: 1, padding: '12px 14px', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700,
+              background: mobileTab === 'DETAIL' ? '#1e293b' : 'transparent',
+              color: mobileTab === 'DETAIL' ? '#FBBF24' : '#94A3B8',
+              borderBottom: mobileTab === 'DETAIL' ? '2px solid #FF9900' : '2px solid transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            🔍 Details {selectedBid ? `(${selectedBid.bidder_code || '1'})` : ''}
+          </button>
         </div>
-        <div style={{ padding: '6px 12px', display: 'flex', gap: 4, flexWrap: 'wrap', borderBottom: '1px solid #f1f5f9' }}>
-          {FILTERS.map(f => (
-            <button
-              key={f.key}
-              id={`filter-${f.key.toLowerCase()}`}
-              onClick={() => setFilter(f.key)}
-              style={{
-                padding: '3px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700,
-                border: filter === f.key ? '1.5px solid #1e3a5f' : '1.5px solid #e2e8f0',
-                background: filter === f.key ? '#1e3a5f' : '#fff',
-                color: filter === f.key ? '#fff' : '#64748b', cursor: 'pointer',
-              }}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {filteredBids.map((bid, idx) => {
-            const bId = bid.id || bid._id || String(idx);
-            const risk = bid.risk_level || bid.risk_band || 'LOW';
-            const riskS = RISK_S[risk] ?? RISK_S.LOW;
-            const status = bid.overall_status || bid.compliance_status || 'PENDING';
-            const statusS = RS[status] ?? RS.PENDING;
-            const isSelected = (selectedBid?.id || selectedBid?._id) === bId;
-            const bidderName = bid.bidder?.name || bid.bidder_name || `Bid #${bId.slice(0, 8)}`;
-            const turnover = bid.bidder?.turnover_cr ?? bid.turnover_cr ?? '—';
-            const category = bid.bidder?.category || bid.category || 'General';
+      )}
 
-            return (
-              <div
-                key={bId}
-                id={`bid-row-${bId}`}
-                onClick={() => selectBid(bid)}
+      {/* Left: Bidder list */}
+      {(!isMobile || mobileTab === 'LIST') && (
+        <div style={{
+          width: isMobile ? '100%' : 320,
+          flexShrink: 0,
+          borderRight: isMobile ? 'none' : '1px solid #e2e8f0',
+          display: 'flex', flexDirection: 'column',
+          overflow: 'hidden', background: '#fff',
+          height: isMobile ? '100%' : 'auto',
+        }}>
+          <div style={{ padding: '12px 14px', borderBottom: '1px solid #f1f5f9' }}>
+            <div style={{ fontWeight: 800, fontSize: 13, color: '#1e3a5f' }}>Compliance Trace & Review</div>
+            <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>
+              {selectedBid?.tender_reference || selectedBid?.tender_id ? `Tender: ${selectedBid.tender_reference || selectedBid.tender_id}` : 'Technical Verification'}
+            </div>
+          </div>
+          <div style={{ padding: '6px 10px', display: 'flex', gap: 4, flexWrap: 'wrap', borderBottom: '1px solid #f1f5f9' }}>
+            {FILTERS.map(f => (
+              <button
+                key={f.key}
+                id={`filter-${f.key.toLowerCase()}`}
+                onClick={() => setFilter(f.key)}
                 style={{
-                  padding: '11px 14px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer',
-                  background: isSelected ? '#f0f4ff' : '#fff',
-                  borderLeft: isSelected ? '3px solid #1e3a5f' : '3px solid transparent',
+                  padding: '3px 7px', borderRadius: 20, fontSize: 10, fontWeight: 700,
+                  border: filter === f.key ? '1.5px solid #1e3a5f' : '1.5px solid #e2e8f0',
+                  background: filter === f.key ? '#1e3a5f' : '#fff',
+                  color: filter === f.key ? '#fff' : '#64748b', cursor: 'pointer',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 12, color: '#1e3a5f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {bidderName}
-                    </div>
-                    <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>
-                      ₹{turnover} Cr · {category}
-                    </div>
-                    {bid.officer_status && (
-                      <div style={{ fontSize: 9, color: '#7c3aed', marginTop: 2, fontWeight: 700 }}>
-                        Officer: {bid.officer_status}
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {filteredBids.map((bid, idx) => {
+              const bId = bid.id || bid._id || String(idx);
+              const risk = bid.risk_level || bid.risk_band || 'LOW';
+              const riskS = RISK_S[risk] ?? RISK_S.LOW;
+              const status = bid.overall_status || bid.compliance_status || 'PENDING';
+              const statusS = RS[status] ?? RS.PENDING;
+              const isSelected = (selectedBid?.id || selectedBid?._id) === bId;
+              const bidderName = bid.bidder?.name || bid.bidder_name || `Bid #${bId.slice(0, 8)}`;
+              const turnover = bid.bidder?.turnover_cr ?? bid.turnover_cr ?? '—';
+              const category = bid.bidder?.category || bid.category || 'General';
+
+              return (
+                <div
+                  key={bId}
+                  id={`bid-row-${bId}`}
+                  onClick={() => selectBid(bid)}
+                  style={{
+                    padding: '11px 14px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer',
+                    background: isSelected ? '#f0f4ff' : '#fff',
+                    borderLeft: isSelected ? '3px solid #1e3a5f' : '3px solid transparent',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 12, color: '#1e3a5f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {bidderName}
                       </div>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-end', flexShrink: 0 }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 20, color: riskS.color, background: riskS.bg }}>
-                      ● {risk}
-                    </span>
-                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 20, color: statusS.color, background: statusS.bg }}>
-                      {statusS.icon} {status}
-                    </span>
+                      <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>
+                        ₹{turnover} Cr · {category}
+                      </div>
+                      {bid.officer_status && (
+                        <div style={{ fontSize: 9, color: '#7c3aed', marginTop: 2, fontWeight: 700 }}>
+                          Officer: {bid.officer_status}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-end', flexShrink: 0 }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 20, color: riskS.color, background: riskS.bg }}>
+                        ● {risk}
+                      </span>
+                      <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 20, color: statusS.color, background: statusS.bg }}>
+                        {statusS.icon} {status}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-          {filteredBids.length === 0 && (
-            <div style={{ padding: 20, textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>No bids match this filter.</div>
-          )}
+              );
+            })}
+            {filteredBids.length === 0 && (
+              <div style={{ padding: 20, textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>No bids match this filter.</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Right: Detail panel */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: 24, background: '#f8fafc' }}>
-        {detailLoading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, color: '#94a3b8', fontSize: 13 }}>
-            ⏳ Loading bidder detail…
-          </div>
-        ) : selectedBid ? (
-          <BidderDetail bid={selectedBid} onRefresh={refreshSelected} />
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', color: '#94a3b8', gap: 10 }}>
-            <span style={{ fontSize: 40 }}>📋</span>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Select a bidder to view compliance trace</div>
-            <div style={{ fontSize: 12 }}>Click any bidder in the list to trace evidence from tender clause down to registry verification</div>
-          </div>
-        )}
-      </div>
+      {(!isMobile || mobileTab === 'DETAIL') && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '14px 12px' : 24, background: '#f8fafc', width: isMobile ? '100%' : 'auto', boxSizing: 'border-box' }}>
+          {isMobile && selectedBid && (
+            <button
+              onClick={() => setMobileTab('LIST')}
+              style={{
+                marginBottom: 12, padding: '6px 12px', borderRadius: 6,
+                background: '#fff', border: '1px solid #cbd5e1', color: '#1e3a5f',
+                fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+              }}
+            >
+              ← Back to Bidders List
+            </button>
+          )}
+          {detailLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, color: '#94a3b8', fontSize: 13 }}>
+              ⏳ Loading bidder detail…
+            </div>
+          ) : selectedBid ? (
+            <BidderDetail bid={selectedBid} onRefresh={refreshSelected} />
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', color: '#94a3b8', gap: 10, textAlign: 'center', padding: 20 }}>
+              <span style={{ fontSize: 40 }}>📋</span>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Select a bidder to view compliance trace</div>
+              <div style={{ fontSize: 12 }}>
+                {isMobile ? 'Tap the "Bidders" tab above and pick a bidder.' : 'Click any bidder in the list to trace evidence from tender clause down to registry verification'}
+              </div>
+              {isMobile && (
+                <button
+                  onClick={() => setMobileTab('LIST')}
+                  style={{ marginTop: 8, padding: '8px 16px', borderRadius: 6, background: '#1e3a5f', color: '#fff', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  View Bidders List ({filteredBids.length})
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -97,6 +97,13 @@ export default function FinancialWorkspacePage() {
   const [resetting, setResetting] = useState(false);
   const [banner, setBanner] = useState(null);
   const [notes, setNotes] = useState('');
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 880 : false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 880);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Guard: only FINANCIAL_EVALUATOR
   useEffect(() => {
@@ -173,42 +180,43 @@ export default function FinancialWorkspacePage() {
   );
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: "'Inter', sans-serif", color: C.text }}>
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: "'Inter', sans-serif", color: C.text, width: '100%', maxWidth: '100vw', overflowX: 'hidden', boxSizing: 'border-box' }}>
       {/* Header */}
       <div style={{
         borderBottom: `1px solid ${C.border}`,
         background: 'rgba(255,255,255,0.02)',
-        padding: '20px 32px',
+        padding: isMobile ? '14px 16px' : '20px 32px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: 14,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 44, height: 44, borderRadius: 12,
+            width: 40, height: 40, borderRadius: 10,
             background: 'linear-gradient(135deg, #f59e0b, #d97706)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20, boxShadow: '0 4px 16px rgba(245,158,11,0.4)',
+            fontSize: 18, boxShadow: '0 4px 16px rgba(245,158,11,0.4)',
+            flexShrink: 0,
           }}>💰</div>
           <div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: C.text }}>
+            <h1 style={{ margin: 0, fontSize: isMobile ? 17 : 20, fontWeight: 800, color: C.text }}>
               Financial Evaluator Workspace
             </h1>
-            <p style={{ margin: 0, fontSize: 12, color: C.muted }}>
+            <p style={{ margin: 0, fontSize: 11, color: C.muted }}>
               Envelope Unsealing · MII/MSE Preferences · L1 Ranking — GFR 2017 Compliant
             </p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <span style={{
-            padding: '6px 14px', borderRadius: 20, fontSize: 11, fontWeight: 700,
+            padding: '5px 12px', borderRadius: 20, fontSize: 10, fontWeight: 700,
             background: C.goldBg, color: C.gold, border: `1px solid ${C.goldBorder}`,
           }}>💰 FINANCIAL_EVALUATOR</span>
-
         </div>
       </div>
 
       {banner && (
         <div style={{
-          margin: '16px 32px',
+          margin: isMobile ? '12px 14px' : '16px 32px',
           padding: '12px 16px', borderRadius: 10,
           background: banner.type === 'error' ? C.redBg : C.greenBg,
           border: `1px solid ${banner.type === 'error' ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}`,
@@ -220,7 +228,16 @@ export default function FinancialWorkspacePage() {
         </div>
       )}
 
-      <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: '280px 1fr', gap: 24, maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{
+        padding: isMobile ? '14px 12px' : '24px 32px',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '280px 1fr',
+        gap: 20,
+        maxWidth: 1400,
+        margin: '0 auto',
+        boxSizing: 'border-box',
+        width: '100%',
+      }}>
         {/* Left: Tender List */}
         <div>
           <div style={{ ...card, marginBottom: 16 }}>
@@ -284,38 +301,40 @@ export default function FinancialWorkspacePage() {
                 <span style={{ fontSize: 11, color: C.muted }}>Calculated at {new Date().toLocaleTimeString()}</span>
               </div>
               {l1Data.rankings && l1Data.rankings.length > 0 ? (
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-                      {['Rank', 'Bidder', 'Quoted Price', 'MII Class', 'MSE', 'Adjusted Price'].map(h => (
-                        <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: '0.05em' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {l1Data.rankings.map((r, i) => (
-                      <tr key={r.bid_id || i}
-                        style={{ borderBottom: `1px solid ${C.border}`, background: i === 0 ? 'rgba(245,158,11,0.06)' : 'transparent' }}>
-                        <td style={{ padding: '12px 14px' }}>
-                          {i === 0 ? (
-                            <span style={{ background: C.goldBg, color: C.gold, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 800 }}>🥇 L1</span>
-                          ) : (
-                            <span style={{ color: C.textDim, fontWeight: 700, fontSize: 13 }}>#{i + 1}</span>
-                          )}
-                        </td>
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600 }}>{r.bidder_name}</td>
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontFamily: 'monospace' }}>
-                          ₹{Number(r.quoted_price || 0).toLocaleString('en-IN')}
-                        </td>
-                        <td style={{ padding: '12px 14px' }}><MIIBadge miiClass={r.mii_class} /></td>
-                        <td style={{ padding: '12px 14px', fontSize: 13 }}>{r.is_mse ? '✅' : '—'}</td>
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontFamily: 'monospace', fontWeight: 700, color: i === 0 ? C.gold : C.text }}>
-                          ₹{Number(r.adjusted_price || 0).toLocaleString('en-IN')}
-                        </td>
+                <div className="responsive-table-wrapper">
+                  <table style={{ width: '100%', minWidth: 620, borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+                        {['Rank', 'Bidder', 'Quoted Price', 'MII Class', 'MSE', 'Adjusted Price'].map(h => (
+                          <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {l1Data.rankings.map((r, i) => (
+                        <tr key={r.bid_id || i}
+                          style={{ borderBottom: `1px solid ${C.border}`, background: i === 0 ? 'rgba(245,158,11,0.06)' : 'transparent' }}>
+                          <td style={{ padding: '12px 14px' }}>
+                            {i === 0 ? (
+                              <span style={{ background: C.goldBg, color: C.gold, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 800 }}>🥇 L1</span>
+                            ) : (
+                              <span style={{ color: C.textDim, fontWeight: 700, fontSize: 13 }}>#{i + 1}</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600 }}>{r.bidder_name}</td>
+                          <td style={{ padding: '12px 14px', fontSize: 13, fontFamily: 'monospace' }}>
+                            ₹{Number(r.quoted_price || 0).toLocaleString('en-IN')}
+                          </td>
+                          <td style={{ padding: '12px 14px' }}><MIIBadge miiClass={r.mii_class} /></td>
+                          <td style={{ padding: '12px 14px', fontSize: 13 }}>{r.is_mse ? '✅' : '—'}</td>
+                          <td style={{ padding: '12px 14px', fontSize: 13, fontFamily: 'monospace', fontWeight: 700, color: i === 0 ? C.gold : C.text }}>
+                            ₹{Number(r.adjusted_price || 0).toLocaleString('en-IN')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <div style={{ padding: '24px', textAlign: 'center', color: C.muted, fontSize: 13 }}>
                   No technically-passed bids available for L1 ranking yet.
@@ -356,6 +375,7 @@ export default function FinancialWorkspacePage() {
                   return (
                     <div key={bid.id} style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      flexWrap: 'wrap', gap: 12,
                       padding: '16px 20px', borderRadius: 12,
                       border: `1px solid ${isAlreadyUnsealed ? 'rgba(16,185,129,0.3)' : C.goldBorder}`,
                       background: isAlreadyUnsealed ? C.greenBg : C.goldBg,
@@ -364,7 +384,7 @@ export default function FinancialWorkspacePage() {
                         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>
                           {bid.bidder?.name || bid.bidder_name || `Bid #${(bid.id || '').slice(-6).toUpperCase()}`}
                         </div>
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                           <StatusPill status={bid.compliance_status || bid.overall_status} />
                           {bid.financial_envelope?.quoted_price && (
                             <span style={{ fontSize: 12, color: C.muted }}>
@@ -373,7 +393,7 @@ export default function FinancialWorkspacePage() {
                           )}
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                         <StatusPill status={isAlreadyUnsealed ? 'UNSEALED' : 'SEALED'} />
                         {!isAlreadyUnsealed && (
                           <button
@@ -410,6 +430,7 @@ export default function FinancialWorkspacePage() {
                 {blockedBids.map(bid => (
                   <div key={bid.id} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    flexWrap: 'wrap', gap: 12,
                     padding: '14px 20px', borderRadius: 12,
                     border: `1px solid rgba(100,116,139,0.2)`,
                     background: 'rgba(100,116,139,0.05)',
@@ -436,7 +457,7 @@ export default function FinancialWorkspacePage() {
 
           {/* Empty State */}
           {!loading && bids.length === 0 && selectedTender && (
-            <div style={{ ...card, textAlign: 'center', padding: '60px 32px' }}>
+            <div style={{ ...card, textAlign: 'center', padding: isMobile ? '40px 16px' : '60px 32px' }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
               <h3 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 700 }}>No Bids Yet</h3>
               <p style={{ color: C.muted, fontSize: 13, margin: '0 0 20px' }}>
@@ -456,7 +477,7 @@ export default function FinancialWorkspacePage() {
             <h3 style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: '#60a5fa' }}>
               📋 MII / MSE Preference Rules (GFR 2017 + Order 2020)
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
               {[
                 { label: 'Class I Local Supplier', rule: '≥ 50% local content', effect: 'No price disadvantage; purchase preference', color: '#10b981' },
                 { label: 'Class II Local Supplier', rule: '20–49% local content', effect: 'Eligible but ranked below Class I', color: '#3b82f6' },

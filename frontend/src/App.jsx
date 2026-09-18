@@ -43,7 +43,7 @@ function AuthLayout() {
   return (
     <RequireAuth>
       <TopNav />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
         <Outlet />
       </div>
     </RequireAuth>
@@ -53,7 +53,7 @@ function AuthLayout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />

@@ -137,30 +137,30 @@ export default function BidderWorkspacePage() {
   const TABS = [{ key: 'TENDERS', label: '🌐 Available Tenders', n: tenders.length }, { key: 'MY_BIDS', label: '📋 My Applications', n: myBids.length }];
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f1f5f9', fontFamily: "'Inter', -apple-system, sans-serif" }}>
+    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f1f5f9', fontFamily: "'Inter', -apple-system, sans-serif", width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
       {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '16px 32px' }}>
+      <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '14px 16px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
               <Chip c="#0369a1" bg="#e0f2fe" b="#bae6fd">GeM VENDOR PORTAL</Chip>
               <span style={{ fontSize: 11, color: '#64748b' }}>BIDDER · Central Procurement</span>
             </div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#0f172a' }}>{co}</h1>
-            <div style={{ display: 'flex', gap: 16, marginTop: 4, fontSize: 12, color: '#64748b', flexWrap: 'wrap' }}>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#0f172a' }}>{co}</h1>
+            <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 11, color: '#64748b', flexWrap: 'wrap' }}>
               {profile?.gstin && <span>GSTIN: <strong>{profile.gstin}</strong></span>}
               {profile?.pan && <span>PAN: <strong>{profile.pan}</strong></span>}
               {profile?.turnover_cr && <span>Turnover: <strong style={{ color: '#166534' }}>₹{profile.turnover_cr} Cr</strong></span>}
               {profile?.category && <span>Category: <strong>{profile.category}</strong></span>}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '8px 14px', textAlign: 'right' }}>
-              <div style={{ fontSize: 10, color: '#15803d', fontWeight: 700 }}>VENDOR STATUS</div>
-              <div style={{ fontSize: 12, color: '#166534', fontWeight: 800 }}>✓ Active Verified</div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '6px 12px', textAlign: 'right' }}>
+              <div style={{ fontSize: 9, color: '#15803d', fontWeight: 700 }}>VENDOR STATUS</div>
+              <div style={{ fontSize: 11, color: '#166534', fontWeight: 800 }}>✓ Active Verified</div>
             </div>
-            <button onClick={load} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#334155' }}>
-              <RefreshCw size={13} /> Refresh
+            <button onClick={load} style={{ padding: '7px 12px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#334155' }}>
+              <RefreshCw size={12} /> Refresh
             </button>
           </div>
         </div>
@@ -168,11 +168,11 @@ export default function BidderWorkspacePage() {
 
       {/* Tabs */}
       <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', padding: '0 32px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', padding: '0 16px', overflowX: 'auto' }}>
           {TABS.map(t => (
-            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ padding: '13px 20px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: activeTab === t.key ? 800 : 500, color: activeTab === t.key ? '#2563eb' : '#64748b', borderBottom: activeTab === t.key ? '2px solid #2563eb' : '2px solid transparent', display: 'flex', alignItems: 'center', gap: 7 }}>
+            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 12, fontWeight: activeTab === t.key ? 800 : 500, color: activeTab === t.key ? '#2563eb' : '#64748b', borderBottom: activeTab === t.key ? '2px solid #2563eb' : '2px solid transparent', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
               {t.label}
-              <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 10, fontWeight: 800, background: activeTab === t.key ? '#eff6ff' : '#f1f5f9', color: activeTab === t.key ? '#2563eb' : '#94a3b8' }}>{t.n}</span>
+              <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 10, fontWeight: 800, background: activeTab === t.key ? '#eff6ff' : '#f1f5f9', color: activeTab === t.key ? '#2563eb' : '#94a3b8' }}>{t.n}</span>
             </button>
           ))}
         </div>
@@ -180,10 +180,10 @@ export default function BidderWorkspacePage() {
 
       {/* Flash msg */}
       {msg && (
-        <div style={{ maxWidth: 1100, margin: '12px auto 0', padding: '0 32px' }}>
-          <div style={{ padding: '10px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: msg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${msg.type === 'success' ? '#86efac' : '#fca5a5'}`, color: msg.type === 'success' ? '#166534' : '#991b1b' }}>
+        <div style={{ maxWidth: 1100, margin: '10px auto 0', padding: '0 14px' }}>
+          <div style={{ padding: '10px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: msg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${msg.type === 'success' ? '#86efac' : '#fca5a5'}`, color: msg.type === 'success' ? '#166534' : '#991b1b' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {msg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}{msg.text}
+              {msg.type === 'success' ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />}{msg.text}
             </span>
             <button onClick={() => setMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 18 }}>×</button>
           </div>
@@ -191,10 +191,10 @@ export default function BidderWorkspacePage() {
       )}
 
       {/* Content */}
-      <div style={{ maxWidth: 1100, margin: '24px auto 60px', padding: '0 32px' }}>
+      <div style={{ maxWidth: 1100, margin: '18px auto 40px', padding: '0 14px' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: '#64748b' }}>
-            <Loader2 size={28} style={{ margin: '0 auto 10px', display: 'block' }} /><div>Loading…</div>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: '#64748b' }}>
+            <Loader2 size={24} style={{ margin: '0 auto 10px', display: 'block' }} /><div>Loading…</div>
           </div>
         ) : activeTab === 'TENDERS' ? (
           <TendersTab tenders={tenders} appliedFor={appliedFor} onDetail={setDetailT} onApply={t => { setApplyT(t); setBidAmt(''); }} onViewBid={b => { setExpandedBid(b.id || b._id); setActiveTab('MY_BIDS'); }} />
@@ -442,18 +442,18 @@ function TenderDetailModal({ tender, applied, onClose, onApply, onViewBid }) {
   const rules = tender.requirement_rules || tender.rules || [];
   const dl = tender.closing_date ? new Date(tender.closing_date) : null;
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
-      <div style={{ background: '#fff', borderRadius: 16, width: 700, maxWidth: '100%', maxHeight: '88vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 12, boxSizing: 'border-box' }}>
+      <div style={{ background: '#fff', borderRadius: 16, width: 700, maxWidth: '100%', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', overflow: 'hidden', boxSizing: 'border-box' }}>
+        <div style={{ padding: '16px 18px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
           <div>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e40af', background: '#eff6ff', padding: '2px 8px', borderRadius: 4 }}>{tender.reference_number || tender.tender_no}</span>
-            <h2 style={{ margin: '6px 0 0', fontSize: 19, fontWeight: 900, color: '#0f172a' }}>{tender.title}</h2>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>{tender.organization || tender.buyer} · {tender.category || 'Goods'}</div>
+            <h2 style={{ margin: '6px 0 0', fontSize: 17, fontWeight: 900, color: '#0f172a' }}>{tender.title}</h2>
+            <div style={{ fontSize: 11, color: '#64748b', marginTop: 3 }}>{tender.organization || tender.buyer} · {tender.category || 'Goods'}</div>
           </div>
           <button onClick={onClose} style={{ background: '#f1f5f9', border: 'none', width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={16} color="#64748b" /></button>
         </div>
-        <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 20 }}>
+        <div style={{ padding: '16px 18px', overflowY: 'auto', flex: 1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginBottom: 16 }}>
             {[
               { l: 'Issuing Authority', v: tender.organization || tender.buyer || '—' },
               { l: 'Submission Deadline', v: dl ? dl.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Open', red: true },

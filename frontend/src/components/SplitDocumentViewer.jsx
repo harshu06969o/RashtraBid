@@ -146,6 +146,14 @@ export default function SplitDocumentViewer({
   const [filterText, setFilterText] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [highlightPulse, setHighlightPulse] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 880 : false);
+  const [mobileTab, setMobileTab] = useState('FIGURES'); // 'FIGURES' or 'DOC'
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 880);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const canvasRef = useRef(null);
   const boxRefs = useRef({});
@@ -229,7 +237,7 @@ export default function SplitDocumentViewer({
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '780px',
+      height: isMobile ? '82vh' : '780px',
       background: '#0f172a',
       borderRadius: '16px',
       border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -244,7 +252,7 @@ export default function SplitDocumentViewer({
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: 12,
-        padding: '12px 20px',
+        padding: isMobile ? '10px 14px' : '12px 20px',
         background: '#1e293b',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}>
@@ -260,43 +268,40 @@ export default function SplitDocumentViewer({
             borderRadius: '8px',
             fontSize: '12px',
             fontWeight: 700,
-            color: '#93c5fd',
+            color: '#60a5fa',
           }}>
-            <FileText size={15} />
-            <span>ORIGINAL PDF</span>
+            <span>{activeDoc?.icon || '📄'}</span>
+            <span style={{ maxWidth: isMobile ? 130 : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {activeDoc?.name || 'Document'}
+            </span>
           </div>
 
           <select
-            id="select-document-preview"
             value={selectedDocId}
             onChange={(e) => {
               setSelectedDocId(e.target.value);
+              // reset selected evidence to first one matching new doc
               const firstMatch = activeEvidenceList.find(ev => ev.document_id === e.target.value);
               if (firstMatch) setSelectedEvidenceId(firstMatch.id);
             }}
             style={{
               background: '#0f172a',
-              color: '#f8fafc',
               border: '1px solid #334155',
               borderRadius: '8px',
-              padding: '6px 12px',
-              fontSize: '13px',
-              fontWeight: 600,
+              color: '#f8fafc',
+              fontSize: '12px',
+              padding: '6px 10px',
               cursor: 'pointer',
               outline: 'none',
-              maxWidth: '320px',
+              maxWidth: isMobile ? '130px' : '220px',
             }}
           >
             {activeDocCatalog.map(doc => (
               <option key={doc.id} value={doc.id}>
-                {doc.icon || '📄'} {doc.name || doc.type}
+                {doc.icon} {doc.name}
               </option>
             ))}
           </select>
-
-          <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-            ({docEvidence.length} AI bounding {docEvidence.length === 1 ? 'box' : 'boxes'} on page)
-          </span>
         </div>
 
         {/* Zoom & View Controls */}
@@ -319,7 +324,7 @@ export default function SplitDocumentViewer({
             title="Toggle Bounding Boxes"
           >
             <Layers size={14} />
-            <span>B-Boxes {showBoundingBoxes ? 'ON' : 'OFF'}</span>
+            <span>{isMobile ? (showBoundingBoxes ? 'Boxes ON' : 'Boxes OFF') : `B-Boxes ${showBoundingBoxes ? 'ON' : 'OFF'}`}</span>
           </button>
 
           <div style={{ height: 20, width: 1, background: '#334155', margin: '0 4px' }} />
@@ -387,18 +392,65 @@ export default function SplitDocumentViewer({
         </div>
       </div>
 
-      {/* ── DUAL PANE BODY ── */}
-      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-        {/* ═══ LEFT PANE: DOCUMENT VIEWER WITH BOUNDING BOXES ═══ */}
+      {/* ── MOBILE TAB SWITCHER ── */}
+      {isMobile && (
         <div style={{
-          flex: 7,
+          display: 'flex',
+          background: '#0a0f1d',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          padding: '8px 12px',
+          gap: 8,
+        }}>
+          <button
+            onClick={() => setMobileTab('FIGURES')}
+            style={{
+              flex: 1,
+              padding: '8px 10px',
+              borderRadius: 6,
+              border: 'none',
+              background: mobileTab === 'FIGURES' ? '#1e40af' : 'rgba(255,255,255,0.06)',
+              color: mobileTab === 'FIGURES' ? '#fff' : '#94a3b8',
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            🤖 AI Figures ({filteredEvidence.length})
+          </button>
+          <button
+            onClick={() => setMobileTab('DOC')}
+            style={{
+              flex: 1,
+              padding: '8px 10px',
+              borderRadius: 6,
+              border: 'none',
+              background: mobileTab === 'DOC' ? '#1e40af' : 'rgba(255,255,255,0.06)',
+              color: mobileTab === 'DOC' ? '#fff' : '#94a3b8',
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            📄 PDF Sheet Viewer
+          </button>
+        </div>
+      )}
+
+      {/* ── DUAL PANE BODY ── */}
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, width: '100%' }}>
+        {/* ═══ LEFT PANE: DOCUMENT VIEWER WITH BOUNDING BOXES ═══ */}
+        {(!isMobile || mobileTab === 'DOC') && (
+        <div style={{
+          flex: isMobile ? 1 : 7,
+          width: isMobile ? '100%' : 'auto',
           background: '#090d16',
           position: 'relative',
           overflow: 'auto',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
-          padding: '24px',
+          padding: isMobile ? '14px' : '24px',
+          WebkitOverflowScrolling: 'touch',
         }}>
           {/* Scaled PDF Document Sheet */}
           <div
@@ -489,16 +541,19 @@ export default function SplitDocumentViewer({
             })}
           </div>
         </div>
+        )}
 
         {/* ═══ RIGHT PANE: EXTRACTED AI FIGURES INSPECTOR ═══ */}
-        <div style={{
-          flex: 5,
-          background: '#131d2e',
-          borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}>
+        {(!isMobile || mobileTab === 'FIGURES') && (
+          <div style={{
+            flex: isMobile ? 1 : 5,
+            width: isMobile ? '100%' : 'auto',
+            background: '#131d2e',
+            borderLeft: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}>
           {/* Inspector Header */}
           <div style={{
             padding: '16px 20px',
@@ -699,6 +754,7 @@ export default function SplitDocumentViewer({
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSelectEvidence(ev);
+                        if (isMobile) setMobileTab('DOC');
                       }}
                       style={{
                         background: 'transparent',
@@ -728,6 +784,7 @@ export default function SplitDocumentViewer({
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

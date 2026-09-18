@@ -26,12 +26,29 @@
     background-color: #f8fafc;
     color: #1e293b;
     font-size: 14px;
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+    position: relative;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   h1, h2, h3, h4 {
@@ -315,4 +332,49 @@
     color: #15803d;
     font-weight: 700;
   }
+
+  /* Responsive Table Container */
+  .responsive-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .responsive-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+  }
+  .responsive-table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.5);
+    border-radius: 4px;
+  }
+  .responsive-table-wrapper::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.5);
+  }
 }
+
+/* Animations */
+@keyframes ggpulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.25); opacity: 0.4; }
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 14px 12px !important;
+  }
+  .stat-card {
+    padding: 12px 14px !important;
+  }
+  .data-table th, .data-table td {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+  }
+}
+

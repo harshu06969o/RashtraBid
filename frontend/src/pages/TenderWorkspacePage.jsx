@@ -87,23 +87,23 @@ export default function TenderWorkspacePage() {
   ];
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f1f5f9', fontFamily: "'Inter', -apple-system, sans-serif" }}>
+    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f1f5f9', fontFamily: "'Inter', -apple-system, sans-serif", width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
       {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '16px 32px' }}>
+      <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '14px 16px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
               <Chip c="#92400e" bg="#fffbeb" b="#fde68a">GeM OFFICER PORTAL</Chip>
               <span style={{ fontSize: 11, color: '#64748b' }}>PROCUREMENT · Authority</span>
             </div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#0f172a' }}>Tender Management</h1>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#0f172a' }}>Tender Management</h1>
+            <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
               Create, publish, and monitor technical tenders securely.
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <button onClick={load} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#334155' }}>
-              <RefreshCw size={13} /> Refresh
+            <button onClick={load} style={{ padding: '7px 12px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#334155' }}>
+              <RefreshCw size={12} /> Refresh
             </button>
           </div>
         </div>
@@ -111,12 +111,12 @@ export default function TenderWorkspacePage() {
 
       {/* Tabs */}
       <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', padding: '0 32px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', padding: '0 16px', overflowX: 'auto' }}>
           {TABS.map(t => (
-            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ padding: '13px 20px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: activeTab === t.key ? 800 : 500, color: activeTab === t.key ? '#d97706' : '#64748b', borderBottom: activeTab === t.key ? '2px solid #d97706' : '2px solid transparent', display: 'flex', alignItems: 'center', gap: 7 }}>
+            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 12, fontWeight: activeTab === t.key ? 800 : 500, color: activeTab === t.key ? '#d97706' : '#64748b', borderBottom: activeTab === t.key ? '2px solid #d97706' : '2px solid transparent', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
               {t.label}
               {t.n !== undefined && (
-                <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 10, fontWeight: 800, background: activeTab === t.key ? '#fffbeb' : '#f1f5f9', color: activeTab === t.key ? '#d97706' : '#94a3b8' }}>{t.n}</span>
+                <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 10, fontWeight: 800, background: activeTab === t.key ? '#fffbeb' : '#f1f5f9', color: activeTab === t.key ? '#d97706' : '#94a3b8' }}>{t.n}</span>
               )}
             </button>
           ))}
@@ -125,10 +125,10 @@ export default function TenderWorkspacePage() {
 
       {/* Flash msg */}
       {msg && (
-        <div style={{ maxWidth: 1100, margin: '12px auto 0', padding: '0 32px' }}>
-          <div style={{ padding: '10px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: msg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${msg.type === 'success' ? '#86efac' : '#fca5a5'}`, color: msg.type === 'success' ? '#166534' : '#991b1b' }}>
+        <div style={{ maxWidth: 1100, margin: '10px auto 0', padding: '0 14px' }}>
+          <div style={{ padding: '10px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: msg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${msg.type === 'success' ? '#86efac' : '#fca5a5'}`, color: msg.type === 'success' ? '#166534' : '#991b1b' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {msg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}{msg.text}
+              {msg.type === 'success' ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />}{msg.text}
             </span>
             <button onClick={() => setMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 18 }}>×</button>
           </div>
@@ -136,7 +136,7 @@ export default function TenderWorkspacePage() {
       )}
 
       {/* Content */}
-      <div style={{ maxWidth: 1100, margin: '24px auto 60px', padding: '0 32px' }}>
+      <div style={{ maxWidth: 1100, margin: '18px auto 40px', padding: '0 14px' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: '#64748b' }}>
             <Loader2 size={28} className="animate-spin" style={{ margin: '0 auto 10px', display: 'block' }} /><div>Loading Tenders…</div>
@@ -454,26 +454,26 @@ function CreateTenderTab({ onCreated, onCancel }) {
   }
 
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+    <div style={{ maxWidth: 800, width: '100%', margin: '0 auto', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', boxSizing: 'border-box' }}>
       {/* Steps Header */}
-      <div style={{ display: 'flex', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ display: 'flex', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', overflowX: 'auto' }}>
         {[
           { num: 1, title: 'Tender Details', active: step === 1, done: step > 1 },
           { num: 2, title: 'Upload RFP', active: step === 2, done: step > 2 },
           { num: 3, title: 'Review & Publish', active: step === 3, done: step > 3 }
         ].map(s => (
-          <div key={s.num} style={{ flex: 1, padding: '16px', textAlign: 'center', fontSize: 13, fontWeight: s.active ? 800 : 600, color: s.active ? '#d97706' : s.done ? '#166534' : '#64748b', background: s.active ? '#fff' : s.done ? '#f0fdf4' : 'transparent', borderBottom: s.active ? '2px solid #d97706' : 'none' }}>
+          <div key={s.num} style={{ flex: 1, minWidth: 100, padding: '12px 8px', textAlign: 'center', fontSize: 12, fontWeight: s.active ? 800 : 600, color: s.active ? '#d97706' : s.done ? '#166534' : '#64748b', background: s.active ? '#fff' : s.done ? '#f0fdf4' : 'transparent', borderBottom: s.active ? '2px solid #d97706' : 'none' }}>
             {s.done ? '✓' : `${s.num}.`} {s.title}
           </div>
         ))}
       </div>
 
-      <div style={{ padding: '32px' }}>
+      <div style={{ padding: '20px 16px' }}>
         {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '12px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, marginBottom: 20 }}>{error}</div>}
 
         {step === 1 && (
           <form onSubmit={handleCreateTender}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 20 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>Tender Title *</label>
                 <input required value={form.title} onChange={e => set('title', e.target.value)} placeholder="e.g. Supply of Equipment" style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}/>

@@ -99,7 +99,8 @@ export default function LoginPage() {
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #0f172a 100%)',
-      fontFamily: "'Inter', sans-serif", padding: '24px',
+      fontFamily: "'Inter', sans-serif", padding: '16px 12px',
+      width: '100%', maxWidth: '100vw', boxSizing: 'border-box',
     }}>
       {/* Ambient glow */}
       <div style={{
@@ -110,8 +111,8 @@ export default function LoginPage() {
 
       <div style={{
         background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 20, padding: '40px 36px', width: tab === 'REGISTER' ? 540 : 420,
-        maxWidth: '100%', backdropFilter: 'blur(20px)',
+        borderRadius: 20, padding: '28px 20px', width: tab === 'REGISTER' ? 540 : 420,
+        maxWidth: '100%', boxSizing: 'border-box', backdropFilter: 'blur(20px)',
         boxShadow: '0 32px 80px rgba(0,0,0,0.5)', transition: 'all 0.3s ease',
         position: 'relative',
       }}>
@@ -218,7 +219,7 @@ export default function LoginPage() {
         ) : (
           /* REGISTER FORM */
           <form onSubmit={handleRegister}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 12 }}>
               <div>
                 <label style={{ display: 'block', color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 4 }}>COMPANY LEGAL NAME</label>
                 <input type="text" required placeholder="Infralink Tech Ltd"
@@ -231,7 +232,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 12 }}>
               <div>
                 <label style={{ display: 'block', color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 4 }}>GSTIN (15 chars)</label>
                 <input type="text" required placeholder="07AACCI4520M1ZP" maxLength={15}
@@ -246,7 +247,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 12 }}>
               <div>
                 <label style={{ display: 'block', color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 4 }}>ENTERPRISE CATEGORY</label>
                 <select value={category} onChange={e => setCategory(e.target.value)}
@@ -263,7 +264,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
               <div>
                 <label style={{ display: 'block', color: '#94a3b8', fontSize: 11, fontWeight: 600, marginBottom: 4 }}>LOGIN USERNAME</label>
                 <input type="text" required placeholder="infralink_bidder"

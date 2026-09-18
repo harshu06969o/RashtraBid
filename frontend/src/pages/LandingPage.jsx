@@ -146,44 +146,41 @@ function TopRibbon({ t, lang, onLangChange, dark, onDarkToggle, textScale, onSca
   }, []);
 
   return (
-    <div style={{ background:'#0B0F19', position:'sticky', top:0, zIndex:1000 }}>
+    <div style={{ background:'#0B0F19', position:'sticky', top:0, zIndex:1000, width:'100%', maxWidth:'100vw', boxSizing:'border-box' }}>
       <Tricolor h={2.5} />
-      <div style={{ maxWidth:1400, margin:'0 auto', padding:'5px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <span style={{ fontSize:11, fontWeight:700, color:'#F8FAFC', letterSpacing:'0.05em' }}>{t('ribbon_gov')}</span>
-          <div style={{ width:1, height:14, background:'#1F2937' }} />
-          <span style={{ fontSize:10, color:'#6B7280' }}>{t('ribbon_portal')}</span>
-          <div style={{ width:1, height:14, background:'#1F2937' }} />
-          <span style={{ fontSize:9, padding:'2px 7px', borderRadius:20, background:'rgba(19,136,8,0.18)', color:'#4ADE80', border:'1px solid rgba(19,136,8,0.35)', fontWeight:700, letterSpacing:'0.06em', display:'flex', alignItems:'center', gap:4 }}>
+      <div style={{ maxWidth:1400, margin:'0 auto', padding:'5px 12px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+          <span style={{ fontSize:10, fontWeight:700, color:'#F8FAFC', letterSpacing:'0.04em' }}>{t('ribbon_gov')}</span>
+          <div style={{ width:1, height:12, background:'#1F2937' }} />
+          <span style={{ fontSize:9, color:'#6B7280' }}>{t('ribbon_portal')}</span>
+          <div style={{ width:1, height:12, background:'#1F2937' }} />
+          <span style={{ fontSize:9, padding:'1px 6px', borderRadius:20, background:'rgba(19,136,8,0.18)', color:'#4ADE80', border:'1px solid rgba(19,136,8,0.35)', fontWeight:700, letterSpacing:'0.06em', display:'flex', alignItems:'center', gap:4 }}>
             <span style={{ width:5, height:5, borderRadius:'50%', background:'#4ADE80', display:'inline-block', animation:'ggpulse 1.8s infinite' }} />
             LIVE
           </span>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
           {/* Text size */}
           <div style={{ display:'flex', gap:1, background:'#1F2937', borderRadius:4, padding:'2px 3px' }}>
-            <span style={{ fontSize:9, color:'#4B5563', padding:'2px 4px', fontWeight:600 }}>A</span>
-            {['−','','+']. map((s,i) => (
+            {['−','','+'].map((s,i) => (
               <button key={i} onClick={() => onScaleChange(i)} aria-pressed={textScale===i}
-                style={{ background:textScale===i?GOV.navy:'transparent', border:'none', color:textScale===i?'#FFF':'#6B7280', cursor:'pointer', padding:'2px 5px', borderRadius:3, fontSize:i===0?9:i===1?11:13, fontWeight:800, lineHeight:1 }}>
+                style={{ background:textScale===i?GOV.navy:'transparent', border:'none', color:textScale===i?'#FFF':'#6B7280', cursor:'pointer', padding:'2px 5px', borderRadius:3, fontSize:i===0?9:i===1?10:12, fontWeight:800, lineHeight:1 }}>
                 {i===0?'A-':i===1?'A':'A+'}
               </button>
             ))}
           </div>
-          <div style={{ width:1, height:13, background:'#1F2937' }} />
           <button onClick={onDarkToggle} aria-pressed={dark}
-            style={{ display:'flex', alignItems:'center', gap:4, background:dark?'rgba(59,130,246,0.15)':'#1F2937', border:`1px solid ${dark?'rgba(59,130,246,0.4)':'#374151'}`, color:dark?'#93C5FD':'#9CA3AF', cursor:'pointer', padding:'3px 9px', borderRadius:4, fontSize:10, fontWeight:700 }}>
-            {dark ? '☀' : '◑'} {t('ribbon_contrast')}
+            style={{ display:'flex', alignItems:'center', gap:3, background:dark?'rgba(59,130,246,0.15)':'#1F2937', border:`1px solid ${dark?'rgba(59,130,246,0.4)':'#374151'}`, color:dark?'#93C5FD':'#9CA3AF', cursor:'pointer', padding:'3px 7px', borderRadius:4, fontSize:9, fontWeight:700 }}>
+            {dark ? '☀' : '◑'}
           </button>
-          <div style={{ width:1, height:13, background:'#1F2937' }} />
           {/* Language picker */}
           <div ref={ref} style={{ position:'relative' }}>
             <button onClick={() => setShowLangs(v => !v)}
-              style={{ display:'flex', alignItems:'center', gap:5, background:'#1F2937', border:'1px solid #374151', color:'#9CA3AF', cursor:'pointer', padding:'3px 10px', borderRadius:4, fontSize:10, fontWeight:700 }}>
+              style={{ display:'flex', alignItems:'center', gap:4, background:'#1F2937', border:'1px solid #374151', color:'#9CA3AF', cursor:'pointer', padding:'3px 8px', borderRadius:4, fontSize:10, fontWeight:700 }}>
               🌐 {LANG_NAMES[lang]} <span style={{ fontSize:8 }}>{showLangs?'▲':'▼'}</span>
             </button>
             {showLangs && (
-              <div style={{ position:'absolute', top:'calc(100% + 6px)', right:0, background:'#111827', border:'1px solid #1F2937', borderRadius:8, overflow:'hidden', boxShadow:'0 8px 32px rgba(0,0,0,0.5)', zIndex:500, minWidth:160 }}>
+              <div style={{ position:'absolute', top:'calc(100% + 6px)', right:0, background:'#111827', border:'1px solid #1F2937', borderRadius:8, overflow:'hidden', boxShadow:'0 8px 32px rgba(0,0,0,0.5)', zIndex:1500, minWidth:160 }}>
                 {langList.map(([code, name]) => (
                   <button key={code} onClick={() => { onLangChange(code); setShowLangs(false); }}
                     style={{ display:'block', width:'100%', padding:'8px 14px', border:'none', background:lang===code?'rgba(0,51,102,0.4)':'transparent', color:lang===code?'#93C5FD':'#D1D5DB', cursor:'pointer', fontSize:12, textAlign:'left', fontWeight:lang===code?700:400, borderLeft:lang===code?`3px solid ${GOV.navy}`:'3px solid transparent' }}>
@@ -203,32 +200,30 @@ function TopRibbon({ t, lang, onLangChange, dark, onDarkToggle, textScale, onSca
 function MainHeader({ t, tk, onOfficer, onBidder }) {
   const [srch, setSrch] = useState('');
   return (
-    <header style={{ background:tk.header, borderBottom:`1px solid ${tk.border}`, boxShadow:'0 2px 12px rgba(0,0,0,0.07)' }}>
-      <div style={{ maxWidth:1400, margin:'0 auto', padding:'10px 18px', display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
-          <AshokaEmblem size={52} glow />
+    <header style={{ background:tk.header, borderBottom:`1px solid ${tk.border}`, boxShadow:'0 2px 12px rgba(0,0,0,0.07)', width:'100%', maxWidth:'100vw', boxSizing:'border-box' }}>
+      <div style={{ maxWidth:1400, margin:'0 auto', padding:'10px 14px', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', justifyContent:'space-between' }}>
+        {/* Brand */}
+        <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+          <AshokaEmblem size={44} glow />
           <div>
-            <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-              <span style={{ fontSize:21, fontWeight:900, letterSpacing:'-0.5px', background:`linear-gradient(135deg, ${GOV.navyDark}, ${GOV.navy} 60%, #1a5276)`, WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{t('app_name')}</span>
-              <span style={{ fontSize:9, fontWeight:800, padding:'2px 8px', borderRadius:3, background:`linear-gradient(90deg, ${GOV.saffron}, ${GOV.saffronLight})`, color:'#FFF', letterSpacing:'0.1em', boxShadow:`0 2px 6px rgba(255,102,0,0.4)` }}>GEM VERIFICATION</span>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <span style={{ fontSize:18, fontWeight:900, letterSpacing:'-0.5px', background:`linear-gradient(135deg, ${GOV.navyDark}, ${GOV.navy} 60%, #1a5276)`, WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{t('app_name')}</span>
+              <span style={{ fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:3, background:`linear-gradient(90deg, ${GOV.saffron}, ${GOV.saffronLight})`, color:'#FFF', letterSpacing:'0.08em', boxShadow:`0 2px 6px rgba(255,102,0,0.4)` }}>GEM VERIFICATION</span>
             </div>
-            <div style={{ fontSize:11, color:tk.textSub, marginTop:1 }}>{t('app_subtitle')}</div>
+            <div style={{ fontSize:10, color:tk.textSub, marginTop:1 }}>{t('app_subtitle')}</div>
           </div>
         </div>
-        <div style={{ flex:1, maxWidth:320, position:'relative', minWidth:180 }}>
-          <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', fontSize:12, color:tk.textMuted, pointerEvents:'none' }}>🔍</span>
-          <input type="search" placeholder={t('search_placeholder')} value={srch} onChange={e=>setSrch(e.target.value)}
-            style={{ width:'100%', padding:'8px 10px 8px 30px', borderRadius:6, border:`1px solid ${tk.inputBorder}`, background:tk.inputBg, color:tk.inputText, fontSize:12, outline:'none', boxSizing:'border-box', fontFamily:'inherit' }} />
-        </div>
-        <div style={{ display:'flex', gap:9, marginLeft:'auto', alignItems:'center' }}>
+
+        {/* Portal Action Buttons */}
+        <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
           <button id="btn-bidder-portal" onClick={onBidder}
-            style={{ padding:'8px 17px', borderRadius:6, border:`1.5px solid ${GOV.greenLight}`, background:'transparent', color:GOV.greenLight, fontWeight:700, fontSize:13, cursor:'pointer', display:'flex', alignItems:'center', gap:5, transition:'all 0.2s' }}
+            style={{ padding:'7px 14px', borderRadius:6, border:`1.5px solid ${GOV.greenLight}`, background:'transparent', color:GOV.greenLight, fontWeight:700, fontSize:12, cursor:'pointer', display:'flex', alignItems:'center', gap:5, transition:'all 0.2s', flexShrink:0 }}
             onMouseEnter={e=>{e.currentTarget.style.background=GOV.greenLight;e.currentTarget.style.color='#FFF';}}
             onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=GOV.greenLight;}}>
             👤 {t('btn_bidder')}
           </button>
           <button id="btn-officer-login" onClick={onOfficer}
-            style={{ padding:'8px 19px', borderRadius:6, border:`1.5px solid ${GOV.navy}`, background:GOV.navy, color:'#FFF', fontWeight:700, fontSize:13, cursor:'pointer', display:'flex', alignItems:'center', gap:5, transition:'all 0.2s', boxShadow:`0 2px 8px rgba(0,51,102,0.35)` }}
+            style={{ padding:'7px 16px', borderRadius:6, border:`1.5px solid ${GOV.navy}`, background:GOV.navy, color:'#FFF', fontWeight:700, fontSize:12, cursor:'pointer', display:'flex', alignItems:'center', gap:5, transition:'all 0.2s', boxShadow:`0 2px 8px rgba(0,51,102,0.35)`, flexShrink:0 }}
             onMouseEnter={e=>{e.currentTarget.style.background=GOV.navyDark;e.currentTarget.style.boxShadow=`0 4px 16px rgba(0,51,102,0.55)`;}}
             onMouseLeave={e=>{e.currentTarget.style.background=GOV.navy;e.currentTarget.style.boxShadow=`0 2px 8px rgba(0,51,102,0.35)`;}}>
             🔐 {t('btn_officer')}
@@ -251,18 +246,18 @@ function HeroSection({ t, tk, data, onOfficer, onBidder }) {
   }, []);
 
   return (
-    <div style={{ background:tk.header, borderBottom:`1px solid ${tk.border}` }}>
-      <div style={{ maxWidth:1400, margin:'0 auto', padding:'24px 18px 20px', display:'flex', gap:20, flexWrap:'wrap', justifyContent:'space-between', alignItems:'flex-start' }}>
-        <div style={{ flex:1, minWidth:280 }}>
+    <div style={{ background:tk.header, borderBottom:`1px solid ${tk.border}`, width:'100%', maxWidth:'100vw', boxSizing:'border-box' }}>
+      <div style={{ maxWidth:1400, margin:'0 auto', padding:'20px 14px', display:'flex', gap:18, flexWrap:'wrap', justifyContent:'space-between', alignItems:'flex-start' }}>
+        <div style={{ flex:'1 1 300px', minWidth:0, maxWidth:'100%' }}>
           {/* Live badge */}
-          <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:10, flexWrap:'wrap' }}>
-            <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:10, fontWeight:800, padding:'3px 11px', borderRadius:20, background:'rgba(19,136,8,0.1)', color:GOV.green, border:`1px solid rgba(19,136,8,0.25)`, letterSpacing:'0.06em' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10, flexWrap:'wrap' }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:10, fontWeight:800, padding:'3px 10px', borderRadius:20, background:'rgba(19,136,8,0.1)', color:GOV.green, border:`1px solid rgba(19,136,8,0.25)`, letterSpacing:'0.06em' }}>
               <span style={{ width:6, height:6, borderRadius:'50%', background:GOV.green, display:'inline-block', boxShadow:`0 0 5px ${GOV.green}`, animation:'ggpulse 2s infinite' }} />
               {t('live_badge')}
             </span>
             {activeTender && (
               <span style={{ fontSize:10, color:tk.textMuted, fontStyle:'italic' }}>
-                {activeTender.title?.substring(0,44)}...
+                {activeTender.title?.substring(0,36)}...
               </span>
             )}
           </div>
@@ -276,21 +271,21 @@ function HeroSection({ t, tk, data, onOfficer, onBidder }) {
             ))}
           </div>
 
-          <h1 style={{ margin:'0 0 10px', fontSize:25, fontWeight:800, color:tk.text, lineHeight:1.25, letterSpacing:'-0.3px' }}>
+          <h1 style={{ margin:'0 0 10px', fontSize:22, fontWeight:800, color:tk.text, lineHeight:1.3, letterSpacing:'-0.3px' }}>
             {t('hero_title')}
           </h1>
-          <p style={{ margin:'0 0 18px', fontSize:13, color:tk.textSub, lineHeight:1.75, maxWidth:560 }}>{t('hero_sub')}</p>
+          <p style={{ margin:'0 0 18px', fontSize:13, color:tk.textSub, lineHeight:1.7, maxWidth:560 }}>{t('hero_sub')}</p>
 
           {/* Portal CTAs */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(230px, 1fr))', gap:12, maxWidth:560 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:12, maxWidth:560, marginBottom:12 }}>
             {/* Bidder */}
-            <div onClick={onBidder} style={{ background:`linear-gradient(135deg, #0D6E08, ${GOV.green})`, borderRadius:10, padding:'15px 18px', cursor:'pointer', position:'relative', overflow:'hidden', boxShadow:'0 6px 20px rgba(19,136,8,0.28)', transition:'transform 0.2s, box-shadow 0.2s' }}
+            <div onClick={onBidder} style={{ background:`linear-gradient(135deg, #0D6E08, ${GOV.green})`, borderRadius:10, padding:'14px 16px', cursor:'pointer', position:'relative', overflow:'hidden', boxShadow:'0 6px 20px rgba(19,136,8,0.28)', transition:'transform 0.2s, box-shadow 0.2s' }}
               onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 10px 30px rgba(19,136,8,0.38)';}}
               onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 6px 20px rgba(19,136,8,0.28)';}}>
               <div style={{ position:'absolute', right:-12, bottom:-12, width:70, height:70, borderRadius:'50%', background:'rgba(255,255,255,0.07)' }} />
               <div style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', color:'rgba(255,255,255,0.5)', fontSize:18 }}>›</div>
-              <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:7 }}>
-                <div style={{ width:36, height:36, borderRadius:8, background:'rgba(255,255,255,0.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>👤</div>
+              <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:6 }}>
+                <div style={{ width:34, height:34, borderRadius:8, background:'rgba(255,255,255,0.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:17 }}>👤</div>
                 <div>
                   <div style={{ fontSize:13, fontWeight:800, color:'#FFF' }}>{t('portal_bidder_title')}</div>
                   <span style={{ fontSize:9, padding:'1px 6px', borderRadius:20, background:'rgba(255,255,255,0.2)', color:'#FFF', fontWeight:800, letterSpacing:'0.07em' }}>{t('portal_bidder_tag')}</span>
@@ -298,14 +293,15 @@ function HeroSection({ t, tk, data, onOfficer, onBidder }) {
               </div>
               <p style={{ margin:0, fontSize:11, color:'rgba(255,255,255,0.8)', lineHeight:1.5 }}>{t('portal_bidder_sub')}</p>
             </div>
+
             {/* Officer */}
-            <div onClick={onOfficer} style={{ background:`linear-gradient(135deg, #001836, ${GOV.navyDark})`, borderRadius:10, padding:'15px 18px', cursor:'pointer', position:'relative', overflow:'hidden', boxShadow:'0 6px 20px rgba(0,34,68,0.4)', border:'1px solid rgba(255,255,255,0.06)', transition:'transform 0.2s, box-shadow 0.2s' }}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 10px 30px rgba(0,34,68,0.55)';}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 6px 20px rgba(0,34,68,0.4)';}}>
-              <div style={{ position:'absolute', right:-12, bottom:-12, width:70, height:70, borderRadius:'50%', background:'rgba(255,255,255,0.04)' }} />
-              <div style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', color:'rgba(255,255,255,0.35)', fontSize:18 }}>›</div>
-              <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:7 }}>
-                <div style={{ width:36, height:36, borderRadius:8, background:'rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>🔐</div>
+            <div onClick={onOfficer} style={{ background:`linear-gradient(135deg, ${GOV.navyDark}, ${GOV.navy})`, borderRadius:10, padding:'14px 16px', cursor:'pointer', position:'relative', overflow:'hidden', boxShadow:'0 6px 20px rgba(0,51,102,0.35)', transition:'transform 0.2s, box-shadow 0.2s' }}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 10px 30px rgba(0,51,102,0.48)';}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 6px 20px rgba(0,51,102,0.35)';}}>
+              <div style={{ position:'absolute', right:-12, bottom:-12, width:70, height:70, borderRadius:'50%', background:'rgba(255,255,255,0.05)' }} />
+              <div style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', color:'rgba(255,255,255,0.4)', fontSize:18 }}>›</div>
+              <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:6 }}>
+                <div style={{ width:34, height:34, borderRadius:8, background:'rgba(255,255,255,0.12)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:17 }}>🔐</div>
                 <div>
                   <div style={{ fontSize:13, fontWeight:800, color:'#FFF' }}>{t('portal_officer_title')}</div>
                   <span style={{ fontSize:9, padding:'1px 6px', borderRadius:20, background:'rgba(255,166,0,0.28)', color:'#FCD34D', fontWeight:800, letterSpacing:'0.07em' }}>{t('portal_officer_tag')}</span>
@@ -316,14 +312,14 @@ function HeroSection({ t, tk, data, onOfficer, onBidder }) {
           </div>
         </div>
 
-        {/* Right side panel */}
-        <div style={{ display:'flex', flexDirection:'column', gap:10, alignItems:'flex-end', flexShrink:0 }}>
-          <div style={{ background:tk.sectionBg, border:`1px solid ${tk.border}`, borderRadius:10, padding:'13px 17px', minWidth:175, textAlign:'right' }}>
+        {/* Right side panel - standards and registry */}
+        <div style={{ display:'flex', flexDirection:'column', gap:10, flex:'1 1 200px', maxWidth:280, minWidth:0 }}>
+          <div style={{ background:tk.sectionBg, border:`1px solid ${tk.border}`, borderRadius:10, padding:'12px 15px' }}>
             <div style={{ fontSize:9, color:tk.textMuted, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.07em' }}>{t('compliance_label')}</div>
-            <div style={{ fontSize:14, fontWeight:800, color:GOV.navy, marginTop:4, lineHeight:1.3 }}>{t('compliance_std')}</div>
-            <div style={{ marginTop:10, display:'flex', flexDirection:'column', gap:4 }}>
+            <div style={{ fontSize:13, fontWeight:800, color:GOV.navy, marginTop:4, lineHeight:1.3 }}>{t('compliance_std')}</div>
+            <div style={{ marginTop:8, display:'flex', flexDirection:'column', gap:4 }}>
               {['GIGW 3.0','WCAG 2.1 AA','GFR Rule 173','RTI Act 2005'].map(b => (
-                <div key={b} style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:5 }}>
+                <div key={b} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:5 }}>
                   <span style={{ fontSize:10, color:tk.textSub }}>{b}</span>
                   <div style={{ width:16, height:16, borderRadius:'50%', background:'#DCFCE7', border:'1px solid #86EFAC', display:'flex', alignItems:'center', justifyContent:'center', fontSize:8, color:GOV.green, fontWeight:900 }}>✓</div>
                 </div>
@@ -331,10 +327,10 @@ function HeroSection({ t, tk, data, onOfficer, onBidder }) {
             </div>
           </div>
           {/* Registry sync */}
-          <div style={{ background:tk.card, border:`1px solid ${tk.border}`, borderRadius:8, padding:'9px 14px', textAlign:'right' }}>
+          <div style={{ background:tk.card, border:`1px solid ${tk.border}`, borderRadius:8, padding:'9px 14px' }}>
             <div style={{ fontSize:9, color:tk.textMuted, fontWeight:700, letterSpacing:'0.06em', marginBottom:5 }}>REGISTRY SYNC STATUS</div>
             {[['GSTN','#4ADE80'],['UDYAM','#4ADE80'],['CBDT-PAN','#4ADE80'],['EPFO','#FBBF24']].map(([r,c]) => (
-              <div key={r} style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:6, marginBottom:3 }}>
+              <div key={r} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:6, marginBottom:3 }}>
                 <span style={{ fontSize:10, color:tk.textSub, fontFamily:'monospace' }}>{r}</span>
                 <span style={{ width:7, height:7, borderRadius:'50%', background:c, boxShadow:`0 0 6px ${c}`, display:'inline-block' }} />
               </div>
@@ -440,8 +436,8 @@ function StatutoryCategories({ t, tk }) {
 function PipelineStrip({ tk }) {
   const steps = [['📋','RFP Intelligence','PyMuPDF'],['👁️','Vision OCR','LayoutLM'],['🔗','6-Registry Check','GSTN·PAN·EPFO'],['⚖️','Rules Engine','Zero Hallucination'],['🛡️','SHA-256 Audit','Immutable Ledger']];
   return (
-    <div style={{ maxWidth:1400, margin:'0 auto', padding:'20px 18px' }}>
-      <div style={{ background:tk.card, border:`1px solid ${tk.border}`, borderRadius:8, padding:'14px 18px', overflowX:'auto' }}>
+    <div style={{ maxWidth:1400, margin:'0 auto', padding:'16px 14px', width:'100%', maxWidth:'100vw', boxSizing:'border-box' }}>
+      <div style={{ background:tk.card, border:`1px solid ${tk.border}`, borderRadius:8, padding:'12px 14px', overflowX:'auto', WebkitOverflowScrolling:'touch', width:'100%', boxSizing:'border-box' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:'max-content' }}>
           {steps.map(([icon,title,sub],i) => (
             <div key={i} style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -510,8 +506,8 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
   const lbl = { display:'block', fontSize:10, fontWeight:700, color:tk.textSub, marginBottom:5, textTransform:'uppercase', letterSpacing:'0.07em' };
 
   return (
-    <div style={{ position:'fixed', inset:0, zIndex:3000, display:'flex', alignItems:'center', justifyContent:'center', padding:20,
-      background: visible ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0)',
+    <div style={{ position:'fixed', inset:0, zIndex:3000, display:'flex', alignItems:'center', justifyContent:'center', padding:12,
+      background: visible ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0)',
       backdropFilter: visible ? 'blur(8px) saturate(180%)' : 'none',
       transition:'all 0.32s cubic-bezier(0.4,0,0.2,1)',
     }} onClick={e => e.target===e.currentTarget && closeModal()}>
@@ -520,23 +516,23 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
         backdropFilter: 'blur(20px) saturate(200%)',
         border: `1px solid ${tk.glassBorder}`,
         borderRadius:16, width:tab===1?560:440, maxWidth:'100%',
+        maxHeight:'92vh', overflowY:'auto',
         boxShadow:'0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.05)',
-        overflow:'hidden',
         transform: visible ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.96)',
         transition:'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), width 0.3s ease',
       }}>
         <Tricolor h={3} />
         {/* Header */}
-        <div style={{ background:`linear-gradient(135deg, ${GOV.navyDark}, ${GOV.navy})`, padding:'16px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <AshokaEmblem size={34} glow={false} />
+        <div style={{ background:`linear-gradient(135deg, ${GOV.navyDark}, ${GOV.navy})`, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <AshokaEmblem size={30} glow={false} />
             <div>
-              <div style={{ color:'#FFF', fontSize:14, fontWeight:800 }}>{tab===0?t('login_title'):t('register_tab')}</div>
+              <div style={{ color:'#FFF', fontSize:13, fontWeight:800 }}>{tab===0?t('login_title'):t('register_tab')}</div>
               <div style={{ color:'rgba(255,255,255,0.5)', fontSize:10, marginTop:1 }}>{t('login_subtitle')}</div>
             </div>
           </div>
           <button onClick={closeModal} aria-label="Close"
-            style={{ background:'rgba(255,255,255,0.1)', border:'none', color:'#FFF', width:30, height:30, borderRadius:8, cursor:'pointer', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center', transition:'background 0.2s' }}
+            style={{ background:'rgba(255,255,255,0.1)', border:'none', color:'#FFF', width:28, height:28, borderRadius:8, cursor:'pointer', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center', transition:'background 0.2s' }}
             onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.2)'}
             onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>
             ×
@@ -557,7 +553,7 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
         <div style={{ overflow:'hidden' }}>
           <div style={{ display:'flex', transform:`translateX(${-tab*100}%)`, transition:anim?'none':'transform 0.28s cubic-bezier(0.4,0,0.2,1)' }}>
             {/* LOGIN PANEL */}
-            <div style={{ minWidth:'100%', padding:'22px' }}>
+            <div style={{ minWidth:'100%', padding:'18px', boxSizing:'border-box' }}>
               {error && <div role="alert" style={{ background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:7, padding:'10px 14px', marginBottom:14, color:GOV.red, fontSize:12, fontWeight:600 }}>⚠️ {error}</div>}
               <form onSubmit={doLogin} noValidate>
                 <div style={{ marginBottom:13 }}>
@@ -572,7 +568,7 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
                 </div>
                 {/* Demo credentials box */}
                 <div style={{ background:'linear-gradient(135deg, #EFF6FF, #DBEAFE)', border:'1px solid #93C5FD', borderRadius:8, padding:'10px 14px', marginBottom:16 }}>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4 }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4, flexWrap:'wrap', gap:6 }}>
                     <div style={{ fontSize:10, fontWeight:800, color:GOV.blue, letterSpacing:'0.04em' }}>🎯 DEMO CREDENTIALS</div>
                     <button
                       type="button"
@@ -584,10 +580,10 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
                       ⚡ Auto-Fill
                     </button>
                   </div>
-                  <div style={{ fontSize:12, color:GOV.blue }}>
-                    <strong>Officer:</strong> <code style={{ background:'rgba(0,0,0,0.08)', padding:'1px 5px', borderRadius:4, fontWeight:600 }}>officer@gem.gov.in</code> / <code style={{ background:'rgba(0,0,0,0.08)', padding:'1px 5px', borderRadius:4, fontWeight:600 }}>Admin@123</code>
+                  <div style={{ fontSize:11, color:GOV.blue, wordBreak:'break-word' }}>
+                    <strong>Officer:</strong> <code style={{ background:'rgba(0,0,0,0.08)', padding:'1px 4px', borderRadius:4, fontWeight:600 }}>officer@gem.gov.in</code> / <code style={{ background:'rgba(0,0,0,0.08)', padding:'1px 4px', borderRadius:4, fontWeight:600 }}>Admin@123</code>
                   </div>
-                  <div style={{ fontSize:11, color:'#3B82F6', marginTop:3 }}>Or use your registered Bidder credentials</div>
+                  <div style={{ fontSize:10, color:'#3B82F6', marginTop:3 }}>Or use your registered Bidder credentials</div>
                 </div>
                 <button id="login-submit" type="submit" disabled={loading}
                   style={{ width:'100%', padding:'12px', borderRadius:8, border:'none', background:loading?'#94A3B8':`linear-gradient(135deg, ${GOV.navyDark}, ${GOV.navy})`, color:'#FFF', fontWeight:700, fontSize:14, cursor:loading?'not-allowed':'pointer', boxShadow:loading?'none':`0 4px 14px rgba(0,51,102,0.4)`, transition:'all 0.2s', letterSpacing:'0.02em' }}
@@ -598,18 +594,18 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
               </form>
             </div>
             {/* REGISTER PANEL */}
-            <div style={{ minWidth:'100%', padding:'18px 22px' }}>
+            <div style={{ minWidth:'100%', padding:'18px', boxSizing:'border-box' }}>
               {error && <div role="alert" style={{ background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:7, padding:'10px 14px', marginBottom:12, color:GOV.red, fontSize:12, fontWeight:600 }}>⚠️ {error}</div>}
               <form onSubmit={doRegister} noValidate>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(190px, 1fr))', gap:10, marginBottom:10 }}>
                   <div><label style={lbl}>{t('field_company')}</label><input required placeholder="Bharat Safety Pvt. Ltd" value={company} onChange={e=>setCompany(e.target.value)} style={inp} onFocus={e=>e.target.style.borderColor=GOV.navy} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                   <div><label style={lbl}>{t('field_rep')}</label><input required placeholder="Rajesh Kumar" value={regName} onChange={e=>setRegName(e.target.value)} style={inp} onFocus={e=>e.target.style.borderColor=GOV.navy} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(190px, 1fr))', gap:10, marginBottom:10 }}>
                   <div><label style={lbl}>{t('field_gstin')}</label><input required placeholder="33AABCA1234F1Z5" maxLength={15} value={gstin} onChange={e=>setGstin(e.target.value.toUpperCase())} style={{...inp,fontFamily:'monospace'}} onFocus={e=>e.target.style.borderColor=GOV.navy} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                   <div><label style={lbl}>{t('field_pan')}</label><input required placeholder="AABCA1234F" maxLength={10} value={pan} onChange={e=>setPan(e.target.value.toUpperCase())} style={{...inp,fontFamily:'monospace'}} onFocus={e=>e.target.style.borderColor=GOV.navy} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(190px, 1fr))', gap:10, marginBottom:10 }}>
                   <div><label style={lbl}>{t('field_category')}</label>
                     <select value={category} onChange={e=>setCategory(e.target.value)} style={{...inp,background:tk.inputBg}}>
                       <option value="MSME">MSME (Udyam Verified)</option>
@@ -619,7 +615,7 @@ function PortalModal({ tk, t, mode, onClose, onSuccess }) {
                   </div>
                   <div><label style={lbl}>{t('field_turnover')}</label><input type="number" step="0.1" required placeholder="18.5" value={turnover} onChange={e=>setTurnover(e.target.value)} style={inp} onFocus={e=>e.target.style.borderColor=GOV.green} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(190px, 1fr))', gap:10, marginBottom:16 }}>
                   <div><label style={lbl}>{t('field_username')}</label><input required placeholder="bharat_safety_26" value={regUsername} onChange={e=>setRegUsername(e.target.value)} style={inp} onFocus={e=>e.target.style.borderColor=GOV.green} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                   <div><label style={lbl}>{t('field_password')}</label><input type="password" required placeholder="••••••••" value={regPassword} onChange={e=>setRegPassword(e.target.value)} style={inp} onFocus={e=>e.target.style.borderColor=GOV.green} onBlur={e=>e.target.style.borderColor=tk.inputBorder} /></div>
                 </div>

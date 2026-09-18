@@ -195,15 +195,15 @@ export default function DashboardPage() {
   );
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f8fafc', fontFamily: "'Inter', sans-serif", padding: '24px 28px', maxWidth: 1400, margin: '0 auto' }}>
+    <div style={{ minHeight: 'calc(100vh - 54px)', background: '#f8fafc', fontFamily: "'Inter', sans-serif", padding: '14px 16px', maxWidth: 1400, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
 
       {/* ─── Header ─────────────────────────────────────────────────────────── */}
-      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 24px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 18px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 6, background: '#dcfce7', color: '#15803d', border: '1px solid #86efac', letterSpacing: '0.06em' }}>
             🟢 PROCUREMENT OFFICER
           </span>
-          <h1 style={{ margin: '6px 0 2px', fontSize: 22, fontWeight: 800, color: '#0f172a' }}>
+          <h1 style={{ margin: '6px 0 2px', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>
             Procurement Decision & Action Centre
           </h1>
           <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
@@ -236,11 +236,11 @@ export default function DashboardPage() {
             </select>
           )}
           <button onClick={() => navigate('/tenders')}
-            style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', color: '#1d4ed8', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', color: '#1d4ed8', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
             📋 Manage Tender
           </button>
           <button onClick={() => navigate('/corrigendum')}
-            style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', color: '#d97706', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', color: '#d97706', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
             📝 Corrigendum
           </button>
           {selectedTenderId && (
@@ -253,7 +253,7 @@ export default function DashboardPage() {
               }}
               title="Delete selected tender"
             >
-              🗑️ Delete Tender
+              🗑️ Delete
             </button>
           )}
 
@@ -263,7 +263,7 @@ export default function DashboardPage() {
       {/* ─── Banner ──────────────────────────────────────────────────────────── */}
       {banner && (
         <div style={{
-          marginBottom: 20, padding: '12px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginBottom: 16, padding: '12px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           background: banner.type === 'success' ? '#dcfce7' : banner.type === 'warning' ? '#fffbeb' : '#fee2e2',
           color: banner.type === 'success' ? '#166534' : banner.type === 'warning' ? '#92400e' : '#991b1b',
           border: `1px solid ${banner.type === 'success' ? '#86efac' : banner.type === 'warning' ? '#fde68a' : '#fca5a5'}`,
@@ -273,21 +273,21 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ─── KPI Cards ───────────────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+      {/* ─── KPI Cards (Fluid responsive grid) ─────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 20 }}>
         {[
           { label: 'Total Bids', value: total, color: '#1e3a8a', bg: '#eff6ff', border: '#bfdbfe', icon: '📦' },
           { label: 'Compliant', value: passCount, color: '#166534', bg: '#dcfce7', border: '#86efac', icon: '✓' },
           { label: 'Require Action', value: failCount + reviewCount, color: '#991b1b', bg: '#fee2e2', border: '#fca5a5', icon: '⚠️' },
           { label: 'Pending Verification', value: pendingCount, color: '#475569', bg: '#f1f5f9', border: '#cbd5e1', icon: '⏳' },
         ].map(k => (
-          <div key={k.label} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ width: 48, height: 48, borderRadius: 12, background: k.bg, border: `1px solid ${k.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
+          <div key={k.label} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: k.bg, border: `1px solid ${k.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
               {k.icon}
             </div>
             <div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.value}</div>
-              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{k.label}</div>
+              <div style={{ fontSize: 24, fontWeight: 800, color: k.color, lineHeight: 1 }}>{k.value}</div>
+              <div style={{ fontSize: 11, color: '#64748b', marginTop: 3 }}>{k.label}</div>
             </div>
           </div>
         ))}
@@ -295,23 +295,23 @@ export default function DashboardPage() {
 
       {/* ─── Action Queue ────────────────────────────────────────────────────── */}
       {actionQueue.length > 0 && (
-        <div style={{ background: '#fff', border: '1px solid #fecaca', borderRadius: 12, marginBottom: 24, overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #fee2e2', background: '#fef2f2', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ background: '#fff', border: '1px solid #fecaca', borderRadius: 12, marginBottom: 20, overflow: 'hidden' }}>
+          <div style={{ padding: '14px 18px', borderBottom: '1px solid #fee2e2', background: '#fef2f2', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 16 }}>🚨</span>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: '#991b1b' }}>Action Queue — {actionQueue.length} bids require immediate officer decision</div>
-              <div style={{ fontSize: 12, color: '#b91c1c' }}>Each action is cryptographically appended to the SHA-256 audit chain</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#991b1b' }}>Action Queue — {actionQueue.length} bids require immediate officer decision</div>
+              <div style={{ fontSize: 11, color: '#b91c1c' }}>Each action is cryptographically appended to the SHA-256 audit chain</div>
             </div>
           </div>
-          <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
             {actionQueue.map(bid => (
               <div key={bid.id} style={{
-                padding: '16px 20px', borderRadius: 10, border: `1px solid ${bid.overall_status === 'FAIL' || bid.compliance_status === 'NON_COMPLIANT' ? '#fca5a5' : '#fde68a'}`,
+                padding: '14px 16px', borderRadius: 10, border: `1px solid ${bid.overall_status === 'FAIL' || bid.compliance_status === 'NON_COMPLIANT' ? '#fca5a5' : '#fde68a'}`,
                 background: bid.overall_status === 'FAIL' || bid.compliance_status === 'NON_COMPLIANT' ? '#fef2f2' : '#fffbeb',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div style={{ flex: '1 1 240px', minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{ fontWeight: 800, fontSize: 14, color: '#0f172a' }}>
                         {bid.bidder_code}. {bid.bidder?.name || bid.bidder_name}
                       </span>
@@ -327,18 +327,18 @@ export default function DashboardPage() {
                       </div>
                     )}
                   </div>
-                  <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <button onClick={() => handleApprove(bid)}
-                      style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #86efac', background: '#dcfce7', color: '#166534', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                      ✓ Approve Clearance
+                      style={{ padding: '7px 12px', borderRadius: 6, border: '1px solid #86efac', background: '#dcfce7', color: '#166534', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                      ✓ Approve
                     </button>
                     <button onClick={() => handleShowCause(bid)}
-                      style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #fde68a', background: '#fffbeb', color: '#92400e', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                      📋 Show-Cause Notice
+                      style={{ padding: '7px 12px', borderRadius: 6, border: '1px solid #fde68a', background: '#fffbeb', color: '#92400e', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                      📋 Show-Cause
                     </button>
                     <button onClick={() => openOverride(bid)}
-                      style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                      ⚡ Statutory Override
+                      style={{ padding: '7px 12px', borderRadius: 6, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                      ⚡ Override
                     </button>
                   </div>
                 </div>

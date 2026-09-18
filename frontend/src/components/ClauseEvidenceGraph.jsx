@@ -426,15 +426,18 @@ export default function ClauseEvidenceGraph({
         </div>
       </div>
 
-      {/* ── 5 STAGE COLUMN TITLES ── */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
-        padding: '12px 20px',
-        background: '#0d1524',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-        gap: '16px',
-      }}>
+      {/* ── 5 STAGE GRAPH CONTAINER (Horizontally scrollable on mobile) ── */}
+      <div className="responsive-table-wrapper" style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div style={{ minWidth: '960px' }}>
+          {/* ── 5 STAGE COLUMN TITLES ── */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            padding: '12px 20px',
+            background: '#0d1524',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            gap: '16px',
+          }}>
         {[
           { icon: FileCode2, label: '1. Tender Clause', color: '#60a5fa', sub: 'Procurement Specs' },
           { icon: Scale, label: '2. Requirement Rule', color: '#a78bfa', sub: 'Deterministic Logic' },
@@ -772,6 +775,8 @@ export default function ClauseEvidenceGraph({
               );
             })}
           </div>
+        </div>
+      </div>
         </div>
       </div>
 
