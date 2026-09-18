@@ -1,0 +1,32 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.13.5
+pydantic-settings==2.15.0
+pydantic-core==2.46.5
+python-multipart==0.0.20
+python-dotenv==1.2.3
+aiofiles==24.1.0
+httpx==0.28.1
+pymupdf==1.28.2
+# MongoDB async driver
+motor==3.7.0
+mongomock-motor==0.0.35
+# Cloud Storage
+cloudinary>=1.36.0
+# Auth
+bcrypt==4.3.0
+python-jose[cryptography]==3.3.0
+pyjwt>=2.10.0
+passlib[bcrypt]>=1.7.4
+# AI/ML & Data Processing (Google Gemini uses httpx REST calls)
+pdfplumber==0.11.7
+python-docx>=1.1.0
+pandas>=2.2.0
+scikit-learn>=1.5.0
+# OCR (optional - install Tesseract system binary separately)
+pytesseract==0.3.13
+opencv-python-headless==4.11.0.86
+numpy==2.2.6
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.25.0

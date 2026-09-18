@@ -1,0 +1,23 @@
+{
+  "name": "api-gateway",
+  "version": "6.0.0",
+  "description": "RashtraBid Node.js API Gateway v6.0 — RBAC Gatekeeper",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "dev:watch": "node --watch server.js",
+    "dev:api-gateway": "node server.js",
+    "test": "node test_gateway.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "http-proxy-middleware": "^3.0.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0"
+  }
+}

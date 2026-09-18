@@ -1,0 +1,8 @@
+{
+  "_test": {
+    "username": "_test",
+    "password_hash": "x",
+    "role": "BIDDER",
+    "name": "Test"
+  }
+}
