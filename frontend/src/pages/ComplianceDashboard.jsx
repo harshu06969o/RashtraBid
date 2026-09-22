@@ -106,7 +106,8 @@ function OfficerActionPanel({ bidId, onSuccess }) {
         : `Officer recorded compliance evaluation decision: ${backendAction}.`;
       await submitOfficerAction(bidId, {
         action: backendAction,
-        comment: justification,
+        reason: justification,    // primary field expected by backend schema
+        comment: justification,   // alias for backwards-compat
         actor: 'officer@gem.gov.in',
       });
       setOk(true);
@@ -114,7 +115,9 @@ function OfficerActionPanel({ bidId, onSuccess }) {
       if (onSuccess) onSuccess();
     } catch (e) {
       // Extract readable message from ApiError or plain error
-      const msg = e?.message || (typeof e === 'object' ? JSON.stringify(e) : String(e));
+      const msg = e?.message
+        || (e?.detail && typeof e.detail === 'string' ? e.detail : null)
+        || (typeof e === 'object' ? JSON.stringify(e) : String(e));
       setErr(msg || 'Failed to record decision');
     } finally {
       setLoading(false);

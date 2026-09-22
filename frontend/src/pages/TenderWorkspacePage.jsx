@@ -229,13 +229,34 @@ function TenderDetailModal({ tender, onClose, navigate, onDelete }) {
   const [showPdf, setShowPdf] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const rules = tender.requirement_rules || tender.rules || [];
   const tId = tender.id || tender._id || tender.tender_no;
-  // Route through the API gateway (port 3000 → backend), not directly to 8001
+  // Include token as query param so the browser iframe/download can authenticate
   const token = localStorage.getItem('rashtrabid_token') || localStorage.getItem('gemguard_token') || '';
-  const pdfUrl = `/api/v1/tenders/${tId}/pdf?token=${token}`;
-  const pdfDownloadUrl = `/api/v1/tenders/${tId}/pdf?token=${token}`;
+  const pdfUrl = `/api/v1/tenders/${tId}/pdf${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      const res = await fetch(pdfUrl, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      if (!res.ok) throw new Error('Download failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = tender.filename || tender.original_filename || 'tender.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Download failed: ' + e.message);
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   async function handleDelete() {
     setDeleting(true);
@@ -270,13 +291,13 @@ function TenderDetailModal({ tender, onClose, navigate, onDelete }) {
               <div style={{ padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={16} color="#3b82f6"/> {tender.filename || tender.original_filename || 'Uploaded RFP Document'}</span>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <a
-                    href={pdfDownloadUrl}
-                    download={tender.filename || 'tender.pdf'}
-                    style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, borderRadius: 6, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
+                  <button
+                    onClick={handleDownload}
+                    disabled={downloading}
+                    style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, borderRadius: 6, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8', cursor: downloading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, opacity: downloading ? 0.7 : 1 }}
                   >
-                    ⬇ Download PDF
-                  </a>
+                    {downloading ? '⏳ Downloading…' : '⬇ Download PDF'}
+                  </button>
                   <button onClick={() => setShowPdf(false)} style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}>✕ Close</button>
                 </div>
               </div>

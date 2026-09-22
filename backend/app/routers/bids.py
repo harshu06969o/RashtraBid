@@ -59,10 +59,16 @@ class SubmitBidRequest(BaseModel):
 
 
 class OfficerActionRequest(BaseModel):
-    action: str  # APPROVE, REJECT, SEEK_CLARIFICATION
-    reason: str
+    action: str  # APPROVE, REJECT, SEEK_CLARIFICATION, PENDING
+    reason: Optional[str] = None   # primary justification field
+    comment: Optional[str] = None  # alias accepted from frontend
     actor: Optional[str] = "officer@gem.gov.in"
     clause_overrides: Optional[List[Dict[str, Any]]] = None
+
+    @property
+    def justification(self) -> str:
+        """Return whichever justification field was provided."""
+        return (self.reason or self.comment or "").strip()
 
 
 class OfficerOverrideRequest(BaseModel):
@@ -676,18 +682,35 @@ async def list_verifications(bid_id: str, db=Depends(get_db)):
 @router.post("/api/bids/{bid_id}/officer-action")
 @router.post("/bids/{bid_id}/officer-action")
 async def officer_action(bid_id: str, body: OfficerActionRequest, db=Depends(get_db)):
-    """Procurement Officer action (APPROVE, REJECT, SEEK_CLARIFICATION)."""
+    """Procurement Officer action (APPROVE, REJECT, SEEK_CLARIFICATION, PENDING)."""
+    VALID = {"APPROVE", "REJECT", "SEEK_CLARIFICATION", "PENDING"}
+    if body.action not in VALID:
+        raise HTTPException(status_code=400, detail=f"Invalid action. Must be one of: {VALID}")
+
+    justification = body.justification
+    if len(justification) < 10:
+        raise HTTPException(
+            status_code=400,
+            detail="Justification must be at least 10 characters. Officer decisions must be recorded.",
+        )
+
     oid = to_oid(bid_id)
     bid = await db["bids"].find_one({"_id": oid})
     if not bid:
         raise HTTPException(status_code=404, detail=f"Bid not found: {bid_id}")
 
+    STATUS_MAP = {
+        "APPROVE": "APPROVED",
+        "REJECT": "REJECTED",
+        "SEEK_CLARIFICATION": "CLARIFICATION_REQUESTED",
+        "PENDING": "PENDING",
+    }
     update_fields = {
         "officer_decision": body.action,
-        "officer_reason": body.reason,
+        "officer_reason": justification,
         "officer_actor": body.actor,
         "officer_action_time": utcnow_str(),
-        "status": "APPROVED" if body.action == "APPROVE" else "REJECTED" if body.action == "REJECT" else "CLARIFICATION_REQUESTED",
+        "status": STATUS_MAP.get(body.action, "UNDER_REVIEW"),
     }
     await db["bids"].update_one({"_id": oid}, {"$set": update_fields})
 
@@ -697,10 +720,10 @@ async def officer_action(bid_id: str, body: OfficerActionRequest, db=Depends(get
         "actor": body.actor or "officer@gem.gov.in",
         "action": f"OFFICER_{body.action}",
         "entity_id": bid_id,
-        "details": {"reason": body.reason, "overrides": body.clause_overrides},
+        "details": {"reason": justification, "overrides": body.clause_overrides},
     })
 
-    return {"status": "success", "bid_id": bid_id, "decision": body.action}
+    return {"status": "success", "bid_id": bid_id, "decision": body.action, "message": f"Decision '{body.action}' recorded."}
 
 
 # ── Compliance Evidence Trace ─────────────────────────────────────────────────
