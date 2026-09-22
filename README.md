@@ -147,44 +147,85 @@ Strict enforcement of the two-envelope procurement system.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Exhaustive Technology Stack
 
-| Domain | Technology | Implementation Details |
+### Frontend (React/Vite)
+| Technology | Version | Purpose |
 | :--- | :--- | :--- |
-| **Frontend** | React + Vite | Lightning-fast HMR, Redux Toolkit for state management, i18n (8 languages). |
-| **API Gateway** | Express.js | Edge routing, Rate Limiting, CORS Policy enforcement. |
-| **Backend Core** | FastAPI (Python) | Async execution, strict Pydantic v2 validation, Auto-generated Swagger docs. |
-| **Database** | MongoDB + Motor | Non-blocking async driver (`motor`). Flexible schema for unpredictable RFP structures. |
-| **AI / NLP** | Gemini 1.5 Flash | Structured JSON extraction (`google-genai` / REST). |
-| **Vision / OCR** | PyMuPDF, Tesseract, OpenCV | Hybrid digital and layout-aware optical character recognition. |
-| **Data Engine** | Pandas, NumPy | High-performance DataFrame cross-document validations. |
-| **Storage** | Cloudinary / Local | Hybrid blob storage abstracting ephemeral disk limitations. |
+| **React** | `^19.2.8` | Core UI library |
+| **Vite** | `^8.2.2` | Lightning-fast build tool and dev server |
+| **Redux Toolkit** | `^2.12.0` | Global state management (Auth, i18n) |
+| **React Router** | `^7.18.3` | Client-side routing |
+| **Tailwind CSS** | `^4.3.3` | Utility-first styling framework |
+| **Lucide React** | `^0.475.0` | Clean, modern iconography |
+
+### API Gateway (Node.js)
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **Express.js** | `^4.21.2` | Core proxy server and middleware router |
+| **HTTP-Proxy** | `^3.0.3` | `http-proxy-middleware` for routing to FastAPI |
+| **Helmet** | `^8.0.0` | Secures Express apps by setting HTTP response headers |
+| **JWT** | `^9.0.2` | Edge-level `jsonwebtoken` verification |
+| **Morgan** | `^1.10.0` | HTTP request logger middleware |
+
+### Backend & AI (Python/FastAPI)
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **FastAPI** | `0.115.6` | Async web framework |
+| **Motor** | `3.7.0` | Async MongoDB driver |
+| **Pydantic** | `2.13.5` | Strict data validation and schema enforcement |
+| **PyMuPDF** | `1.28.2` | PDF parsing, table structure extraction, coordinates |
+| **Pandas** | `>=2.2.0` | Cross-document integrity dataframe validation |
+| **Scikit-Learn** | `>=1.5.0` | AI/ML processing and risk scoring |
+| **Tesseract / OpenCV**| `4.11.0.86` | Hybrid optical character recognition |
+| **Passlib / Bcrypt**| `4.3.0` | Cryptographic password hashing |
+| **Cloudinary** | `>=1.36.0` | Blob storage management |
+| **Google Gemini API**| (via httpx) | LLM flash extraction and entity parsing |
+| **Pytest** | `8.3.4` | Automated testing (`pytest-asyncio`) |
 
 ---
 
-## 📂 Project Structure
+## 📂 Comprehensive Project Structure
 
 ```text
 RashtraBid/
-├── api-gateway/               # Express.js Gateway Proxy
-│   └── index.js
-├── backend/                   # FastAPI Server Core
+├── api-gateway/               # Node.js Reverse Proxy & Edge Security
+│   ├── middleware/            
+│   │   └── auth.js            # JWT verification before forwarding
+│   ├── server.js              # Express app entry point
+│   ├── test_gateway.js        # Gateway tests
+│   └── package.json           # express, helmet, http-proxy-middleware
+├── backend/                   # Python FastAPI Backend
 │   ├── app/
-│   │   ├── connectors/        # Mock Govt API Registries (GSTN, PAN, UDYAM, EPFO)
-│   │   ├── core/              # Config, Async DB Engine, Hybrid Storage
-│   │   ├── engine/            # Pandas Compliance Engine, SHA-256 Audit Engine
-│   │   ├── pipeline/          # AI Tender Compiler, Vision Document Processor
-│   │   ├── routers/           # Auth, Tenders, Bids, Financial, Corrigendum API Routes
-│   │   └── schemas/           # Strict Pydantic Domain Models
-│   ├── tests/                 # Pytest Suite (Connectors, Compiler, Architecture)
-│   └── requirements.txt       # Dependencies (fastapi, motor, pymupdf, pandas)
+│   │   ├── audit/             # SHA-256 blockchain audit logs
+│   │   ├── connectors/        # Mock Registries (GSTN, PAN, EPFO, UDYAM, DEBARMENT, STARTUP)
+│   │   ├── core/              # Config, Async Motor DB Engine, Hybrid Storage
+│   │   ├── db/                # Database migrations/seeders
+│   │   ├── engine/            # Pandas Compliance Engine, Cross-Doc Validator
+│   │   ├── extractors/        # Regex and NLP extraction fallbacks
+│   │   ├── models/            # Internal database models
+│   │   ├── pipeline/          # AI Tender Compiler, OCR Engine, Risk Scorer
+│   │   ├── routers/           # API (bids.py, corrigendum.py, financial.py, tenders.py)
+│   │   ├── rules/             # Rule evaluation strategies
+│   │   ├── schemas/           # Pydantic v2 Domain Models (RequirementRule, Evidence, etc.)
+│   │   ├── services/          # Business logic abstraction layer
+│   │   └── main.py            # FastAPI ASGI application
+│   ├── data/                  # Sample PDFs and test files
+│   ├── fix_extraction.py      # Utility script for re-running extractions
+│   ├── test_*.py              # Comprehensive Pytest Suite (Connectors, Compiler, Architecture)
+│   └── requirements.txt       # fastapi, motor, pymupdf, pandas, scikit-learn
 ├── frontend/                  # React Vite Application
 │   ├── src/
-│   │   ├── components/        # SplitDocumentViewer, ClauseEvidenceGraph, TopNav
-│   │   ├── i18n/              # Multi-language translations
-│   │   ├── pages/             # Workspaces (Bidder, Officer, Financial, Corrigendum)
-│   │   └── store/             # Redux slices (Auth, i18n)
-│   └── package.json
+│   │   ├── api/               # Axios clients and interceptors
+│   │   ├── components/        # ClauseEvidenceGraph, OverrideModal, SplitDocumentViewer, TopNav
+│   │   ├── i18n/              # Multi-language dictionary files
+│   │   ├── pages/             # Bidder, Officer, Financial, Corrigendum, Landing Dashboards
+│   │   ├── store/             # Redux slices (Auth, i18n)
+│   │   ├── types/             # TypeScript definitions / JSDoc schemas
+│   │   ├── App.jsx            # Main routing layer (RoleGuard, RequireAuth)
+│   │   └── main.jsx           # React DOM hydration
+│   ├── package.json           # react, redux, tailwindcss v4, lucide-react
+│   └── vite.config.js         # Vite configuration
 └── README.md
 ```
 
